@@ -56,6 +56,22 @@
             font-size: 1.7vw;
         }
 
+        #landing-text-column {
+            display: flex;
+            flex-direction: column;
+            padding-left: 10%;
+            padding-right: 55%;
+        }
+
+        @media (max-width: 800px) {
+            #landing-screenshot {display: none}
+            #landing-text-column {padding-right: 10%}
+            #landing h1 {font-size: 5vw}
+            #landing text {font-size: 2.6vw}
+            .landing-button {height: 6vw; width: 30vw}
+            .button-text {font-size: 3.4vw}
+        }
+
     </style>
 </head>
 
@@ -71,7 +87,7 @@
 
             <!-- landing panel content -->
             <div style="display: flex; flex-direction: row; height: 100%; align-items: center">
-                <div style="display: flex; flex-direction: column; padding-left: 10%; padding-right: 55%">
+                <div id="landing-text-column">
                     <h1>Empower individuals to be change agents</h1>
                     <text>Unlock your organization’s full potential by creating an equitable, inclusive, and engaged culture.  Get started in under a minute for free. </text>
                     <div style="display: flex; flex-direction: row; margin-top: 3vw; justify-content: space-between">
@@ -85,7 +101,7 @@
                 </div>
             </div>
 
-            <img src="slack-equity.svg" style="position: absolute; width: 35%; left: 55%; top: 25%" alt="Product screenshot">
+            <img id="landing-screenshot" src="slack-equity.svg" style="position: absolute; width: 35%; left: 55%; top: 25%" alt="Product screenshot">
 
         </div>
 
