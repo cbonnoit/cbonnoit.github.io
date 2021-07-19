@@ -1,27 +1,30 @@
 <head>
+    <!-- styling for overlay panels -->
+    <style>
+        .panel-wrapper-2-1 {
+            position: relative;
+            width: 100%;
+            padding-bottom: 50%;
+        }
+
+        .panel-inner {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+
     <!-- styling for landing panel -->
     <style>
         * {
           font-family: "Noto Sans", sans-serif;
         }
 
-        .panel-wrapper-2-1 {
-          position: relative;
-          width: 100%;
-          padding-bottom: 50%;
-        }
-
-        .panel-inner {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-        }
-
         #landing h1{
             color: white;
-            font-size: 3.45vw;
+            font-size: 3.4vw;
             text-align: left;
         }
 
@@ -143,7 +146,7 @@
 <body style="margin: 0">
     <!-- Landing panel -->
     <div class="panel-wrapper-2-1" id="landing">
-        <div class="panel-inner" id="landing-background">
+        <div class="panel-inner">
             <img src="img/landing-background.svg" style="position: absolute; width: 100%; height: 100%" alt="Background">
         </div>
 
@@ -170,7 +173,7 @@
     </div>
 
     <!--- value props --->
-    <div style="display: flex; flex-direction: column; align-items: center">
+    <div style="display: flex; flex-direction: column; align-items: center; padding-bottom: 8vw">
         <h1 style="padding: 8vw 20vw;">Get the most out of opportunities for change with real-time insights</h1>
         <div style="display: flex; flex-direction: row; padding-bottom: 4vw">
             <div id="value-equity" class="value-box" data-value-box-selected="true">
@@ -207,6 +210,27 @@
                 <img class="value-screenshot" id="slack-retention" src="img/slack-retention.svg" alt="Retention product screenshot">
             </div>
             <div class="arrow-right" id="value-arrow-right"></div>
+        </div>
+    </div>
+
+    <!-- integration -->
+    <div class="panel-wrapper-2-1" id="integrate">
+        <div class="panel-inner" id="integrate-background">
+            <img src="img/integrate-background.svg" style="position: absolute; width: 100%; height: 100%" alt="Background">
+        </div>
+        <div class="panel-inner">
+            <h1 style="padding: 8vw 20vw; color: black">
+                Integrate in seconds for a unified view of digital communications
+            </h1>
+            <img src="img/integrate.svg" alt="Product integrations" style="width: 50%; margin-left: 25%">
+        </div>
+    </div>
+
+    <!-- copyright -->
+    <div style="width:100%; background: #4B5D64">
+        <div style="display: flex; align-items: center; padding-top: 6vw; padding-bottom: 3vw; justify-content: space-evenly">
+            <img src="img/landing-logo.svg" style="width: 10%;" alt="Logo">
+            <text style="color: #A1CA43; font-size: 1.5vw">© Copyright 2021. All rights reserved.</text>
         </div>
     </div>
 
