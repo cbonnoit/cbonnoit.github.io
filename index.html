@@ -1,1 +1,93 @@
-hello world
+<head>
+    <style>
+        * {
+          font-family: "Noto Sans", sans-serif;
+        }
+
+        .panel-wrapper-2-1 {
+          position: relative;
+          width: 100%;
+          padding-bottom: 50%;
+        }
+
+        .panel-inner {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+        }
+
+        #landing h1{
+            color: white;
+            font-size: 3.5vw;
+        }
+
+        #landing text {
+            color: white;
+            font-size: 1.3vw;
+        }
+
+        .landing-button {
+            border-radius: 1vw;
+            height: 3vw;
+            width: 15vw;
+            align-items: center;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .primary-cta {
+            background: white;
+            color: #4B5D64;
+        }
+
+        .secondary-cta {
+            color: white;
+            border: 0.3vw white solid;
+        }
+
+        .button-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-weight: bold;
+            font-size: 1.7vw;
+        }
+
+    </style>
+</head>
+
+<body style="margin: 0">
+    <!-- Landing panel -->
+    <div class="panel-wrapper-2-1" id="landing">
+        <div class="panel-inner" id="landing-background">
+            <img src="landing-background.svg" style="position: absolute; width: 100%; height: 100%" alt="Background">
+        </div>
+
+        <div class="panel-inner" id="contents">
+            <img src="landing-logo.svg" style="position: absolute; top: 3%; left: 3%; min-width: 10%; max-width: 20%;" alt="Logo">
+
+            <!-- landing panel content -->
+            <div style="display: flex; flex-direction: row; height: 100%; align-items: center">
+                <div style="display: flex; flex-direction: column; padding-left: 10%; padding-right: 55%">
+                    <h1>Empower individuals to be change agents</h1>
+                    <text>Unlock your organization’s full potential by creating an equitable, inclusive, and engaged culture.  Get started in under a minute for free. </text>
+                    <div style="display: flex; flex-direction: row; margin-top: 3vw; justify-content: space-between">
+                        <div class="landing-button primary-cta">
+                            <div class="button-text">Book demo</div>
+                        </div>
+                        <div class="landing-button secondary-cta">
+                            <div class="button-text">Stay informed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <img src="slack-equity.svg" style="position: absolute; width: 35%; left: 55%; top: 25%" alt="Product screenshot">
+
+        </div>
+
+    </div>
+</body>
