@@ -78,6 +78,24 @@
         h1 {font-size: 3vw;}
         h2 {font-size: 2vw;}
         text {font-size: 1.3vw}
+
+        .arrow-left {
+            width: 0;
+            height: 0;
+            border-top: 3vw solid transparent;
+            border-bottom: 3vw solid transparent;
+            border-right: 1vw solid #4B5D64;
+            margin-right: 2vw;
+        }
+
+        .arrow-right {
+            width: 0;
+            height: 0;
+            border-top: 3vw solid transparent;
+            border-bottom: 3vw solid transparent;
+            border-left: 1vw solid #4B5D64;
+            margin-left: 2vw;
+        }
     </style>
 
     <!-- value props section -->
@@ -90,13 +108,32 @@
             margin-left: 2.5%;
             margin-right: 2.5%;
             text-align: center;
+            cursor: pointer;
+            border-radius: 1vw;
+            padding: 1vw;
         }
         .value-box[data-value-box-selected=true] {
-            box-shadow: 0 0 6vw #A1CA43;
+            box-shadow: 0 0 6vw #A1CA43
+        }
+        .value-box[data-value-box-selected=true]:hover {
+            box-shadow: 0 0 6vw #A1CA43
+        }
+        .value-box:hover{
+            box-shadow: 0 0 6vw #E8F5CA;
         }
         .value-box img {
             width: 40%
         }
+
+        .value-screenshot {
+            width: 100%;
+            display: none;
+        }
+
+        .value-screenshot[data-value-box-selected] {
+            display: block;
+        }
+
     </style>
 </head>
 
@@ -125,7 +162,7 @@
                     </div>
                 </div>
             </div>
-            <img id="landing-screenshot" src="img/slack-equity.svg" style="position: absolute; width: 35%; left: 55%; top: 27%" alt="Product screenshot">
+            <img id="landing-screenshot" src="img/slack-landing.svg" style="position: absolute; width: 35%; left: 55%; top: 27%" alt="Product screenshot">
         </div>
     </div>
 
@@ -136,32 +173,39 @@
             <div id="value-equity" class="value-box" data-value-box-selected="true">
                 <img src="img/equity.svg" alt="Equity icon">
                 <h2>Improve equity</h2>
-                <text>Eliminate hidden biases.</text>
-                <text>Prevent problems from occurring.</text>
+                <text>Eliminate hidden biases and prevent problems from occurring.</text>
             </div>
 
             <div id="value-inclusion" class="value-box">
                 <img src="img/inclusion.svg" alt="Inclusion icon">
                 <h2>Foster inclusion</h2>
-                <text>Invite participation and encourage belonging.</text>
-                <text>Scale management best practices - without the trial and error.</text>
+                <text>Invite participation and encourage belonging by scaling best practices.</text>
             </div>
 
             <div id="value-engagement" class="value-box">
                 <img src="img/engagement.svg" alt="Engagement icon">
                 <h2>Create engagement</h2>
-                <text>Adapt dialogue to energize others.</text>
-                <text>Respect differences to improve output.</text>
+                <text>Adapt dialogue to energize others by respecting differences.</text>
             </div>
 
             <div id="value-retention" class="value-box">
                 <img src="img/retention.svg" alt="Retention icon">
                 <h2>Increase retention</h2>
-                <text>Identify changes in key relations early.</text>
-                <text>Nurture with impact.</text>
+                <text>Identify changes in key relations early to nurture with impact.</text>
             </div>
         </div>
-        <img src="img/slack-equity.svg" style="width: 50%; left: 25%" alt="Product screenshot">
+
+        <div style="display: flex; flex-direction: row; align-items: center">
+            <div class="arrow-left" id="value-arrow-left"></div>
+            <div>
+                <img class="value-screenshot" id="slack-equity" src="img/slack-equity.svg" alt="Equity product screenshot" data-value-box-selected="true">
+                <img class="value-screenshot" id="slack-inclusion" src="img/slack-inclusion.svg" alt="Inclusion product screenshot">
+                <img class="value-screenshot" id="slack-engagement" src="img/slack-engagement.svg" alt="Engagement product screenshot">
+                <img class="value-screenshot" id="slack-retention" src="img/slack-retention.svg" alt="Retention product screenshot">
+            </div>
+            <div class="arrow-right" id="value-arrow-right"></div>
+        </div>
+
     </div>
 
 </body>
