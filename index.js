@@ -94,6 +94,7 @@ function bindCTA () {
             row.node.setAttribute('contenteditable', 'true')
             row.node.setAttribute('data-field', row.field)
         }
+        ctaSubmit.setAttribute('data-is-demo', isDemo)
     }
 
     // bind callbacks to showing form
@@ -113,14 +114,32 @@ function bindCTA () {
 
         // validate there is a well formed address
         const address = fieldToValue.get('address') ?? ''
-        if (!address.includes('@')) {
+        if (!address.includes('@') || !address.includes('.')) {
             ctaHeader.textContent = 'Please enter a valid email address'
             return
         }
 
         // otherwise do the submission
-        // todo: replace placeholder
-        console.log([...fieldToValue.entries()])
+        const urlString = `https://updatewebsitecontact.${'azurewebsites'}.net/api/httptrigger`
+        const isDemo = ctaSubmit.getAttribute('data-is-demo') === 'true'
+        const regexBadChar = /[^a-z0-9-_.@ \n\t]gi/
+        const body = {
+            time: new Date().getTime() / 1000,
+            name: (fieldToValue.get('name') ?? '').replace(regexBadChar, ''),
+            email: address.replace(regexBadChar, ''),
+            message: isDemo ? 'demo' : 'mailing list'
+        }
+
+        // make the url
+        const params = new URLSearchParams(new URL(urlString).search)
+        for (const [name, value] of Object.entries(body))
+            params.set(name, value)
+        const url = `${urlString}?${params.toString()}`
+
+        fetch(url, {method: 'get', mode: 'no-cors'}).then((response) => {
+            // todo: get a response here and show an error message if it fails
+            console.log(response)
+        })
 
         // and close the window
         ctaHeader.textContent = 'Thanks!'

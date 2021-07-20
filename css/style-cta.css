@@ -17,10 +17,10 @@
 
 #cta-inner-frame {
     position: absolute;
-    top: 30%;
+    top: 25%;
     left: 25%;
     width: 50%;
-    height: 40%;
+    height: 50%;
     background-color: #4B5D64;
     border-radius: 1vw;
 }
