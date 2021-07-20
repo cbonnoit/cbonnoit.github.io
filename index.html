@@ -1,8 +1,9 @@
 <head>
     <!-- styling -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style-landing.css">
-    <link rel="stylesheet" href="style-value-props.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-landing.css">
+    <link rel="stylesheet" href="css/style-value-props.css">
+    <link rel="stylesheet" href="css/style-cta.css">
 
     <!-- javascript -->
     <script src="index.js"></script>
@@ -24,10 +25,10 @@
                     <h1>Empower individuals to be change agents</h1>
                     <text>Unlock your organization’s full potential for creating an equitable, inclusive, and engaged culture. Get started for free.</text>
                     <div style="display: flex; flex-direction: row; margin-top: 3vw; justify-content: space-between">
-                        <div class="landing-button primary-cta">
+                        <div id="cta-start" class="button primary-cta">
                             <div class="button-text">Start trial</div>
                         </div>
-                        <div class="landing-button secondary-cta">
+                        <div id="cta-join" class="button secondary-cta">
                             <div class="button-text">Stay informed</div>
                         </div>
                     </div>
@@ -96,6 +97,18 @@
         <div style="display: flex; align-items: center; padding-top: 6vw; padding-bottom: 3vw; justify-content: space-evenly">
             <img src="img/landing-logo.svg" style="width: 10%;" alt="Logo">
             <text style="color: #A1CA43; font-size: 1.5vw">© Copyright 2021. All rights reserved.</text>
+        </div>
+    </div>
+
+    <!-- cta -->
+    <div id="cta-frame" style="display: none">
+        <div id="cta-background"></div>
+        <div id="cta-inner-frame">
+            <h2 id="cta-header"></h2>
+            <div id="cta-field-container"></div>
+            <div id="cta-submit" class="button primary-cta">
+                <div class="button-text">Submit</div>
+            </div>
         </div>
     </div>
 

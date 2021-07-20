@@ -20,6 +20,25 @@ text {font-size: 1.3vw}
     right: 0;
 }
 
+.button {
+    border-radius: 1vw;
+    height: 3vw;
+    width: 15vw;
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.primary-cta {
+    background: white;
+    color: #4B5D64;
+}
+
+.secondary-cta {
+    color: white;
+    border: 0.3vw white solid;
+}
+
 .arrow-left {
     width: 0;
     height: 0;

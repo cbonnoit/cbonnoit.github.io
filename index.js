@@ -3,6 +3,7 @@
  */
 function onPageLoad () {
     bindValueProp()
+    bindCTA()
 }
 
 /**
@@ -11,7 +12,6 @@ function onPageLoad () {
 function bindValueProp () {
     // get corresponding property boxes and screenshot nodes
     const boxNodes = [...document.querySelectorAll('.value-box')]
-    const screenshotNodes = [...document.querySelectorAll('.value-screenshot')]
     const propList = boxNodes.map((x) => x.getAttribute('data-prop'))
 
     // create a function to go to a specific property
@@ -46,6 +46,89 @@ function bindValueProp () {
     })
 }
 
-window.addEventListener("load", () => onPageLoad())
+/**
+ * Bind the call to action buttons to reveal a hidden form
+ */
+function bindCTA () {
+    const ctaBackground = document.querySelector('#cta-background')
+    const ctaFrame = document.querySelector('#cta-frame')
+    const ctaHeader = document.querySelector('#cta-header')
+    const ctaFieldContainer = document.querySelector('#cta-field-container')
+    const ctaSubmit = document.querySelector('#cta-submit')
 
-console.log('running')
+    // define callback to enable form
+    const ctaClick = (isDemo) => {
+        // reveal form
+        ctaFrame.removeAttribute('style')
+
+        // ensure the submit button is not hidden
+        ctaSubmit.removeAttribute('style')
+
+        // set header
+        const textDemo = `Please enter your contact information below and we'll be in touch shortly!`
+        const textMailing = `Please enter your email below and we'll keep you posted!`
+        ctaHeader.textContent = isDemo ? textDemo : textMailing
+
+        // clear any existing cta fields
+        for (const child of [...ctaFieldContainer.childNodes])
+            ctaFieldContainer.removeChild(child)
+
+        // add necessary fields
+        const fieldsDemo = [
+            {field: 'name', label: 'Your name'},
+            {field: 'address', label: 'Your email address'},
+        ]
+        const fieldsMailing = [
+            {field: 'address', label: 'Your email address'},
+        ]
+        const fields = isDemo ? fieldsDemo : fieldsMailing
+        for (const row of fields) {
+            // create label
+            const label = ctaFieldContainer.appendChild(document.createElement('div'))
+            label.setAttribute('class', 'cta-label')
+            label.textContent = row.label
+
+            // create field
+            row.node = ctaFieldContainer.appendChild(document.createElement('div'))
+            row.node.setAttribute('class', 'cta-field')
+            row.node.setAttribute('contenteditable', 'true')
+            row.node.setAttribute('data-field', row.field)
+        }
+    }
+
+    // bind callbacks to showing form
+    document.querySelector('#cta-start').addEventListener('click', () => ctaClick(true))
+    document.querySelector('#cta-join').addEventListener('click', () => ctaClick(false))
+
+    // bind callbacks to hide form if if the user ever clicks away from it
+    ctaBackground.addEventListener('click', () =>
+        ctaFrame.setAttribute('style', 'display: none')
+    )
+
+    // bind callbacks on submit
+    ctaSubmit.addEventListener('click', () => {
+        // get all data
+        const nodes = [...ctaFieldContainer.querySelectorAll('.cta-field')]
+        const fieldToValue = new Map(nodes.map((x) => [x.getAttribute('data-field'), x.textContent]))
+
+        // validate there is a well formed address
+        const address = fieldToValue.get('address') ?? ''
+        if (!address.includes('@')) {
+            ctaHeader.textContent = 'Please enter a valid email address'
+            return
+        }
+
+        // otherwise do the submission
+        // todo: replace placeholder
+        console.log([...fieldToValue.entries()])
+
+        // and close the window
+        ctaHeader.textContent = 'Thanks!'
+        for (const child of [...ctaFieldContainer.childNodes])
+            ctaFieldContainer.removeChild(child)
+        ctaSubmit.setAttribute('style', 'display: none')
+        setTimeout(() => ctaFrame.setAttribute('style', 'display: none'), 1000)
+    })
+}
+
+window.addEventListener("load", () => onPageLoad())
