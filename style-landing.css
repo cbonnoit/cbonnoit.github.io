@@ -1,0 +1,53 @@
+#landing h1{
+    color: white;
+    font-size: 3.4vw;
+    text-align: left;
+}
+
+#landing text {
+    color: white;
+}
+
+.landing-button {
+    border-radius: 1vw;
+    height: 3vw;
+    width: 15vw;
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.primary-cta {
+    background: white;
+    color: #4B5D64;
+}
+
+.secondary-cta {
+    color: white;
+    border: 0.3vw white solid;
+}
+
+.button-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-weight: bold;
+    font-size: 1.7vw;
+}
+
+#landing-text-column {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10%;
+    padding-right: 55%;
+}
+
+@media (max-width: 800px) {
+    #landing-screenshot {display: none}
+    #landing-text-column {padding-right: 10%}
+    #landing h1 {font-size: 5vw}
+    #landing text {font-size: 2.6vw}
+    .landing-button {height: 6vw; width: 30vw}
+    .button-text {font-size: 3.4vw}
+}

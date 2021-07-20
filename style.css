@@ -1,0 +1,41 @@
+* {
+    font-family: "Noto Sans", sans-serif;
+}
+
+h1 {font-size: 3vw; margin: 0; padding-top: 4vw; padding-bottom: 4vw; text-align: center}
+h2 {font-size: 2vw; text-align: center}
+text {font-size: 1.3vw}
+
+.panel-wrapper-2-1 {
+    position: relative;
+    width: 100%;
+    padding-bottom: 50%;
+}
+
+.panel-inner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.arrow-left {
+    width: 0;
+    height: 0;
+    border-top: 3vw solid transparent;
+    border-bottom: 3vw solid transparent;
+    border-right: 1vw solid #4B5D64;
+    margin-right: 2vw;
+    cursor: pointer;
+}
+
+.arrow-right {
+    width: 0;
+    height: 0;
+    border-top: 3vw solid transparent;
+    border-bottom: 3vw solid transparent;
+    border-left: 1vw solid #4B5D64;
+    margin-left: 2vw;
+    cursor: pointer;
+}

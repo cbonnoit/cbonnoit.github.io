@@ -1,146 +1,11 @@
 <head>
-    <!-- styling for overlay panels -->
-    <style>
-        .panel-wrapper-2-1 {
-            position: relative;
-            width: 100%;
-            padding-bottom: 50%;
-        }
+    <!-- styling -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-landing.css">
+    <link rel="stylesheet" href="style-value-props.css">
 
-        .panel-inner {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-    </style>
-
-    <!-- styling for landing panel -->
-    <style>
-        * {
-          font-family: "Noto Sans", sans-serif;
-        }
-
-        #landing h1{
-            color: white;
-            font-size: 3.4vw;
-            text-align: left;
-        }
-
-        #landing text {
-            color: white;
-        }
-
-        .landing-button {
-            border-radius: 1vw;
-            height: 3vw;
-            width: 15vw;
-            align-items: center;
-            box-sizing: border-box;
-            cursor: pointer;
-        }
-
-        .primary-cta {
-            background: white;
-            color: #4B5D64;
-        }
-
-        .secondary-cta {
-            color: white;
-            border: 0.3vw white solid;
-        }
-
-        .button-text {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            font-weight: bold;
-            font-size: 1.7vw;
-        }
-
-        #landing-text-column {
-            display: flex;
-            flex-direction: column;
-            padding-left: 10%;
-            padding-right: 55%;
-        }
-
-        @media (max-width: 800px) {
-            #landing-screenshot {display: none}
-            #landing-text-column {padding-right: 10%}
-            #landing h1 {font-size: 5vw}
-            #landing text {font-size: 2.6vw}
-            .landing-button {height: 6vw; width: 30vw}
-            .button-text {font-size: 3.4vw}
-        }
-    </style>
-
-    <!-- baseline for sections -->
-    <style>
-        h1 {font-size: 3vw; margin: 0; padding-top: 4vw; padding-bottom: 4vw; text-align: center}
-        h2 {font-size: 2vw; text-align: center}
-        text {font-size: 1.3vw}
-
-        .arrow-left {
-            width: 0;
-            height: 0;
-            border-top: 3vw solid transparent;
-            border-bottom: 3vw solid transparent;
-            border-right: 1vw solid #4B5D64;
-            margin-right: 2vw;
-            cursor: pointer;
-        }
-
-        .arrow-right {
-            width: 0;
-            height: 0;
-            border-top: 3vw solid transparent;
-            border-bottom: 3vw solid transparent;
-            border-left: 1vw solid #4B5D64;
-            margin-left: 2vw;
-            cursor: pointer;
-        }
-    </style>
-
-    <!-- value props section -->
-    <style>
-        .value-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 20%;
-            margin-left: 2.5%;
-            margin-right: 2.5%;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 1vw;
-            padding: 1vw;
-        }
-        .value-box[data-value-box-selected=true] {
-            box-shadow: 0 0 6vw #A1CA43
-        }
-        .value-box[data-value-box-selected=true]:hover {
-            box-shadow: 0 0 6vw #A1CA43
-        }
-        .value-box:hover{
-            box-shadow: 0 0 6vw #E8F5CA;
-        }
-        .value-box img {
-            width: 40%
-        }
-
-        .value-screenshot {
-            width: 100%;
-            display: none;
-        }
-
-        .value-screenshot[data-value-box-selected] {
-            display: block;
-        }
-
-    </style>
+    <!-- javascript -->
+    <script src="index.js"></script>
 </head>
 
 <body style="margin: 0">
@@ -175,26 +40,26 @@
     <!--- value props --->
     <div style="display: flex; flex-direction: column; align-items: center; padding-bottom: 8vw">
         <h1 style="padding: 8vw 20vw;">Get the most out of opportunities for change with real-time insights</h1>
-        <div style="display: flex; flex-direction: row; padding-bottom: 4vw">
-            <div id="value-equity" class="value-box" data-value-box-selected="true">
+        <div id="value-box-container" style="display: flex; flex-direction: row; padding-bottom: 4vw">
+            <div class="value-box" data-prop="equity" data-value-box-selected="true">
                 <img src="img/equity.svg" alt="Equity icon">
                 <h2>Improve equity</h2>
                 <text>Eliminate hidden biases and prevent problems from occurring.</text>
             </div>
 
-            <div id="value-inclusion" class="value-box">
+            <div class="value-box" data-prop="inclusion">
                 <img src="img/inclusion.svg" alt="Inclusion icon">
                 <h2>Foster inclusion</h2>
                 <text>Invite participation and encourage belonging by scaling best practices.</text>
             </div>
 
-            <div id="value-engagement" class="value-box">
+            <div class="value-box" data-prop="engagement">
                 <img src="img/engagement.svg" alt="Engagement icon">
                 <h2>Create engagement</h2>
                 <text>Adapt dialogue to energize others by respecting differences.</text>
             </div>
 
-            <div id="value-retention" class="value-box">
+            <div class="value-box" data-prop="retention">
                 <img src="img/retention.svg" alt="Retention icon">
                 <h2>Increase retention</h2>
                 <text>Identify changes in key relations early to nurture with impact.</text>
@@ -203,11 +68,11 @@
 
         <div style="display: flex; flex-direction: row; align-items: center">
             <div class="arrow-left" id="value-arrow-left"></div>
-            <div>
-                <img class="value-screenshot" id="slack-equity" src="img/slack-equity.svg" alt="Equity product screenshot" data-value-box-selected="true">
-                <img class="value-screenshot" id="slack-inclusion" src="img/slack-inclusion.svg" alt="Inclusion product screenshot">
-                <img class="value-screenshot" id="slack-engagement" src="img/slack-engagement.svg" alt="Engagement product screenshot">
-                <img class="value-screenshot" id="slack-retention" src="img/slack-retention.svg" alt="Retention product screenshot">
+            <div style="width: 60vw">
+                <img class="value-screenshot" data-prop="equity" src="img/slack-equity.svg" alt="Equity product screenshot" data-value-box-selected="true">
+                <img class="value-screenshot" data-prop="inclusion" src="img/slack-inclusion.svg" alt="Inclusion product screenshot">
+                <img class="value-screenshot" data-prop="engagement" src="img/slack-engagement.svg" alt="Engagement product screenshot">
+                <img class="value-screenshot" data-prop="retention" src="img/slack-retention.svg" alt="Retention product screenshot">
             </div>
             <div class="arrow-right" id="value-arrow-right"></div>
         </div>
