@@ -22,7 +22,13 @@ function bindValueProp () {
 
         // enable target items
         document.querySelector(`.value-box[data-prop=${prop}]`).setAttribute('data-value-box-selected', 'true')
-        document.querySelector(`.value-screenshot[data-prop=${prop}]`).setAttribute('data-value-box-selected', 'true')
+        const screenshotNode = document.querySelector(`.value-screenshot[data-prop=${prop}]`)
+        screenshotNode.setAttribute('data-value-box-selected', 'true')
+
+        // ensure the screenshot is in view by scrolling the document as needed
+        const screenshotRect = screenshotNode.getBoundingClientRect()
+        const scrollY = screenshotRect.bottom + screenshotRect.height * .05 - window.innerHeight
+        if (scrollY > 0) window.scrollBy(0, scrollY)
     }
 
     // create a function to apply an inter shift to the prop
