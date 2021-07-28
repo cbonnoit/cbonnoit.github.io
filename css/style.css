@@ -2,7 +2,7 @@
     font-family: "Noto Sans", sans-serif;
 }
 
-h1 {font-size: 3vw; margin: 0; padding-top: 4vw; padding-bottom: 4vw; text-align: center}
+h1 {font-size: 3vw; margin: 0; padding-top: 4vmin; padding-bottom: 4vmin; text-align: center}
 h2 {font-size: 2vw; text-align: center}
 text {font-size: 1.3vw}
 
@@ -21,7 +21,7 @@ text {font-size: 1.3vw}
 }
 
 .button {
-    border-radius: 1vw;
+    border-radius: 1vmin;
     height: 3vw;
     width: 15vw;
     align-items: center;
@@ -36,25 +36,25 @@ text {font-size: 1.3vw}
 
 .secondary-cta {
     color: white;
-    border: 0.3vw white solid;
+    border: 0.3vmin white solid;
 }
 
 .arrow-left {
     width: 0;
     height: 0;
-    border-top: 3vw solid transparent;
-    border-bottom: 3vw solid transparent;
-    border-right: 1vw solid #4B5D64;
-    margin-right: 2vw;
+    border-top: 3vmin solid transparent;
+    border-bottom: 3vmin solid transparent;
+    border-right: 1vmin solid #4B5D64;
+    margin-right: 2vmin;
     cursor: pointer;
 }
 
 .arrow-right {
     width: 0;
     height: 0;
-    border-top: 3vw solid transparent;
-    border-bottom: 3vw solid transparent;
-    border-left: 1vw solid #4B5D64;
-    margin-left: 2vw;
+    border-top: 3vmin solid transparent;
+    border-bottom: 3vmin solid transparent;
+    border-left: 1vmin solid #4B5D64;
+    margin-left: 2vmin;
     cursor: pointer;
 }
