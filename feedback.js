@@ -77,6 +77,7 @@ function createSubmitNodes (page, questions) {
   // create submit node
   const submitGroup = page.appendChild(createNode('div', {class: 'flexRow', style: 'justify-content: flex-start'}))
   const submit = submitGroup.appendChild(createNode('div', {class: 'button primary-cta'}, 'Submit response'))
+  const thanks = submitGroup.appendChild(createNode('text', {style: 'display: none'}, 'Thanks! Sending...'))
 
   // add callback to actually do submission
   submit.addEventListener('click', () => {
@@ -101,5 +102,6 @@ function createSubmitNodes (page, questions) {
       // note: since this is sent with no cors, we can not get a response to confirm receipt. acknowledge the click either way
       window.location.replace('https://www.trell.us')
     })
+    thanks.setAttribute('style', 'margin-left: 16px')
   })
 }
