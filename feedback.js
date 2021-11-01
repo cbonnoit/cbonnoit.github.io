@@ -97,9 +97,9 @@ function createSubmitNodes (page, questions) {
     const url = 'https://trellus-write-product-feedback.azurewebsites.net/api/WriteTrigger'
     const body = {time: new Date().getTime() / 1000, feedback}
     // noinspection JSIgnoredPromiseFromCall
-    fetch(url, {method: 'POST', mode: 'no-cors', body: JSON.stringify(body)})
-
-    // note: since this is sent with no cors, we can not get a response to confirm receipt. acknowledge the click either way
-    window.location.replace('https://www.trell.us')
+    fetch(url, {method: 'POST', mode: 'no-cors', body: JSON.stringify(body)}).then(() => {
+      // note: since this is sent with no cors, we can not get a response to confirm receipt. acknowledge the click either way
+      window.location.replace('https://www.trell.us')
+    })
   })
 }
