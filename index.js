@@ -3,6 +3,8 @@ import { createNode } from './user-agent.js'
 
 /**
  * Function invoked on load to control coaching
+ * Note: the page url should look something like
+ * http://127.0.0.1:5500/index.html?conversation_id=14e363e2-624c-4a50-a294-055bbde63990&party_id=0&goal=test&host=5d63-160-72-72-58.ngrok.io
  */
 function onPageLoad () {
     // declare an application state (persistent shared memory)
@@ -193,13 +195,14 @@ function displayCoaching (data, state) {
 function displayTranscript (data, state) {
     // create a root div
     const div = state.transcriptRoot.appendChild(createNode('div'))
-    
+
     // add time information
     const timeStr = new Date().toLocaleString(undefined, {hour: 'numeric', minute: 'numeric', second: 'numeric'})
     div.appendChild(createNode('div', {}, timeStr))
 
     // add transcript
-    div.appendChild(createNode('div', {}, data))
+    const text = JSON.parse(data)['words'].map((x) => x['text']).join(' ')
+    div.appendChild(createNode('div', {}, text))
 }
 
 window.addEventListener("load", () => onPageLoad())
