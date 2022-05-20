@@ -1,159 +1,205 @@
+import { xor } from './core.js'
+import { createNode } from './user-agent.js'
+
 /**
- * Main entry point to binding interactive elements
+ * Function invoked on load to control coaching
  */
 function onPageLoad () {
-    bindValueProp()
-    bindCTA()
+    // declare an application state (persistent shared memory)
+    const state = {}
+
+    // update parameters
+    updateStateParameters(state)
+
+    // start off by trying to connect
+    connectSocket(state, {isCoaching: true})
+    connectSocket(state, {isTranscript: true})
+
+    // wire up button to change connection
+    registerConnectivityCallbacks(state)
 }
 
 /**
- * Make the value prop panel interactive
+ * 
+ * @param {Object} state 
  */
-function bindValueProp () {
-    // get corresponding property boxes and screenshot nodes
-    const boxNodes = [...document.querySelectorAll('.value-box')]
-    const propList = boxNodes.map((x) => x.getAttribute('data-prop'))
+function updateStateParameters (state) {
+    // keep track of the toggle buttons
+    state.toggleCoaching = document.querySelector('#toggleCoaching')
+    state.toggleTranscript = document.querySelector('#toggleTranscript')
 
-    // create a function to go to a specific property
-    const goToProp = (prop) => {
-        // disable current items
-        document.querySelector('.value-box[data-value-box-selected]').removeAttribute('data-value-box-selected')
-        document.querySelector('.value-screenshot[data-value-box-selected]').removeAttribute('data-value-box-selected')
+    // keep track of where to display coaching and transcripts
+    state.coachingRoot = document.querySelector('#coachingRoot')
+    state.transcriptRoot = document.querySelector('#transcriptRoot')
 
-        // enable target items
-        document.querySelector(`.value-box[data-prop=${prop}]`).setAttribute('data-value-box-selected', 'true')
-        const screenshotNode = document.querySelector(`.value-screenshot[data-prop=${prop}]`)
-        screenshotNode.setAttribute('data-value-box-selected', 'true')
+    // declare state for coaching and transcript
+    state.coachingState = {}
+    state.transcriptState = {}
 
-        // ensure the screenshot is in view by scrolling the document as needed
-        const screenshotRect = screenshotNode.getBoundingClientRect()
-        const scrollY = screenshotRect.bottom + screenshotRect.height * .05 - window.innerHeight
-        if (scrollY > 0) window.scrollBy(0, scrollY)
+    // use the url query params to extract host, conversation, and coaching identifiers
+    const params = new URL(document.location).searchParams
+    state.host = params.get('host')
+    state.conversationId = params.get('conversationId')
+    state.partyId = parseInt(params.get('partyId'))
+    state.goal = params.get('goal')
+}
+
+/**
+ * Set the coaching socket for use and update display elements
+ * @param {WebSocket, null} socket 
+ * @param {Object} state
+ * @param {Object} isCoaching
+ * @param {Object} isTranscript
+ */
+function setSocket (socket, state, {isCoaching=false, isTranscript=false}) {
+    // check set references exactly one of coaching and transcript
+    if (!xor(isCoaching, isTranscript)) 
+        throw new Error('Set called without uniqely specifying coaching or transcript')
+
+    // store the current active socket
+    const socketState = isCoaching ? state.coachingState : state.transcriptState
+    socketState.socket = socket
+
+    // update connecting and connected status
+    const connected = socket != null
+    socketState.isConnecting = false
+    socketState.isConnected = connected
+
+    // update toggle
+    const toggle = isCoaching ? state.toggleCoaching : state.toggleTranscript
+    toggle.setAttribute('style', connected ? 'background-color: green' : 'background-color: red')
+}
+
+/**
+ * Initiate a connection request for a coaching session with connection parameters specified by the url query string
+ * @param {Object} state
+ * @param {Object} isCoaching
+ * @param {Object} isTranscript
+ */
+function connectSocket (state, {isCoaching=false, isTranscript=false}) {
+    // check set references exactly one of coaching and transcript
+    if (!xor(isCoaching, isTranscript)) 
+        throw new Error('Set called without uniqely specifying coaching or transcript')
+
+    // get the associated socket state
+    const socketState = isCoaching ? state.coachingState : state.transcriptState
+
+    // if there is already an active connection in progress, exit early
+    if (socketState.isConnecting | socketState.isConnected) {
+        console.log('Skipping connect - already connecting or connected')
+        return
     }
 
-    // create a function to apply an inter shift to the prop
-    const shiftProp = (shift) => {
-        // get the current prop
-        const currentProp = document.querySelector('.value-box[data-value-box-selected]').getAttribute('data-prop')
-        const targetIdx = (((propList.indexOf(currentProp) + shift) % propList.length) + propList.length) % propList.length
-        goToProp(propList[targetIdx])
+    // define socket connetion url
+    // note: ws: did not work (perhaps because ngrok is only mapping https?)
+    const endpoint = isCoaching ? 'client' : 'subscribe-transcript'
+    let queryParams
+    if (isCoaching)
+        queryParams = {conversationId: state.conversationId, partyId: state.partyId, goal: state.goal}
+    else 
+        queryParams = {conversationId: state.conversationId}
+    const queryString = new URLSearchParams(queryParams).toString()
+    const socketUrl = `wss://${state.host}/${endpoint}?${queryString}`
+    
+    // make connection
+    console.log(`Creating websocket to ${socketUrl}`)
+    let socket
+    try {
+        socketState.isConnecting = true
+        socket = new WebSocket(socketUrl)
+    } catch (e) {
+        console.log(`Connection failed`)
     }
 
-    // add callback to arrows
-    document.querySelector('#value-arrow-left').addEventListener('click', () => shiftProp(-1))
-    document.querySelector('#value-arrow-right').addEventListener('click', () => shiftProp(1))
-
-    // add callback to value boxes
-    document.querySelector('#value-box-container').addEventListener('click', (ev) => {
-        // get the target prop.  note if the click is on a text element, we have to look up to the parent to get the data-prop
-        let targetProp = ev.target.getAttribute('data-prop')
-        if (targetProp == null) targetProp = ev.target.parentElement.getAttribute('data-prop')
-        if (targetProp != null) goToProp(targetProp)
+    // bind callbacks
+    socket.addEventListener('open', () => {
+        setSocket(socket, state, {isCoaching: isCoaching, isTranscript: isTranscript})
+        console.log('Coaching socket opened')
     })
+    socket.addEventListener('close', () => {
+        setSocket(null, state, {isCoaching: isCoaching, isTranscript: isTranscript})
+        console.log('Coaching socket closed')
+    })
+    socket.addEventListener('message', (event) => {
+        if (isCoaching) displayCoaching(event.data, state)
+        else displayTranscript(event.data, state)
+    })
+    socket.addEventListener('error', (event) => console.log('WebSocket error: ', event))
 }
 
 /**
- * Bind the call to action buttons to reveal a hidden form
+ * Disconnect the current coaching socket
+ * @param {Object} state
+ * @param {bool} isCoaching
+ * @param {bool} isTranscript
  */
-function bindCTA () {
-    const ctaBackground = document.querySelector('#cta-background')
-    const ctaFrame = document.querySelector('#cta-frame')
-    const ctaHeader = document.querySelector('#cta-header')
-    const ctaFieldContainer = document.querySelector('#cta-field-container')
-    const ctaSubmit = document.querySelector('#cta-submit')
+function disconnectCoaching (state, {isCoaching=false, isTranscript=false}) {
+    // check set references exactly one of coaching and transcript
+    if (!xor(isCoaching, isTranscript)) 
+        throw new Error('Set called without uniqely specifying coaching or transcript')
 
-    // define callback to enable form
-    const ctaClick = (isDemo) => {
-        // reveal form
-        ctaFrame.removeAttribute('style')
-
-        // ensure the submit button is not hidden
-        ctaSubmit.removeAttribute('style')
-
-        // set header
-        const textDemo = `Please enter your contact information below and we'll be in touch shortly!`
-        const textMailing = `Please enter your email below and we'll keep you posted!`
-        ctaHeader.textContent = isDemo ? textDemo : textMailing
-
-        // clear any existing cta fields
-        for (const child of [...ctaFieldContainer.childNodes])
-            ctaFieldContainer.removeChild(child)
-
-        // add necessary fields
-        const fieldsDemo = [
-            {field: 'name', label: 'Your name'},
-            {field: 'address', label: 'Your email address'},
-        ]
-        const fieldsMailing = [
-            {field: 'address', label: 'Your email address'},
-        ]
-        const fields = isDemo ? fieldsDemo : fieldsMailing
-        for (const row of fields) {
-            // create label
-            const label = ctaFieldContainer.appendChild(document.createElement('div'))
-            label.setAttribute('class', 'cta-label')
-            label.textContent = row.label
-
-            // create field
-            row.node = ctaFieldContainer.appendChild(document.createElement('div'))
-            row.node.setAttribute('class', 'cta-field')
-            row.node.setAttribute('contenteditable', 'true')
-            row.node.setAttribute('data-field', row.field)
-        }
-        ctaSubmit.setAttribute('data-is-demo', isDemo)
+    // exit early if there is none
+    const socketState = isCoaching ? state.coachingState : state.transcriptState
+    if (socketState.socket == null) {
+        console.log('Skipping disconnect - already disconnected')
+        return
     }
 
-    // bind callbacks to showing form
-    document.querySelector('#cta-start').addEventListener('click', () => ctaClick(true))
-    document.querySelector('#cta-join').addEventListener('click', () => ctaClick(false))
+    // disconnect
+    socketState.socket.close()
+}
 
-    // bind callbacks to hide form if if the user ever clicks away from it
-    ctaBackground.addEventListener('click', () =>
-        ctaFrame.setAttribute('style', 'display: none')
-    )
-
-    // bind callbacks on submit
-    ctaSubmit.addEventListener('click', () => {
-        // get all data
-        const nodes = [...ctaFieldContainer.querySelectorAll('.cta-field')]
-        const fieldToValue = new Map(nodes.map((x) => [x.getAttribute('data-field'), x.textContent]))
-
-        // validate there is a well formed address
-        const address = fieldToValue.get('address') ?? ''
-        if (!address.includes('@') || !address.includes('.')) {
-            ctaHeader.textContent = 'Please enter a valid email address'
-            return
-        }
-
-        // otherwise do the submission
-        const urlString = `https://updatewebsitecontact.${'azurewebsites'}.net/api/httptrigger`
-        const isDemo = ctaSubmit.getAttribute('data-is-demo') === 'true'
-        const regexBadChar = /[^a-z0-9-_.@ \n\t]gi/
-        const body = {
-            time: new Date().getTime() / 1000,
-            name: (fieldToValue.get('name') ?? '').replace(regexBadChar, ''),
-            email: address.replace(regexBadChar, ''),
-            message: isDemo ? 'demo' : 'mailing list'
-        }
-
-        // make the url
-        const params = new URLSearchParams(new URL(urlString).search)
-        for (const [name, value] of Object.entries(body))
-            params.set(name, value)
-        const url = `${urlString}?${params.toString()}`
-
-        fetch(url, {method: 'get', mode: 'no-cors'}).then((response) => {
-            // todo: get a response here and show an error message if it fails
-            console.log(response)
+/**
+ * Bind click handlers to toggle connectivity
+ * @param {Object} state
+ */
+function registerConnectivityCallbacks (state) {
+    for (const isCoaching of [true, false]) {
+        const toggle = isCoaching ? state.toggleCoaching : state.toggleTranscript
+        toggle.addEventListener('click', () => {
+            // ignore clicks while actively connecting
+            const socketState = isCoaching ? state.coachingState : state.transcriptState
+            if (socketState.isConnecting) return
+    
+            // toggle connectivity
+            if (socketState.isConnected) disconnectCoaching(state, {isCoaching: isCoaching, isTranscript: !isCoaching})
+            else connectSocket()
         })
+    }
+}
 
-        // and close the window
-        ctaHeader.textContent = 'Thanks!'
-        for (const child of [...ctaFieldContainer.childNodes])
-            ctaFieldContainer.removeChild(child)
-        ctaSubmit.setAttribute('style', 'display: none')
-        setTimeout(() => ctaFrame.setAttribute('style', 'display: none'), 1000)
-    })
+/**
+ * Display `data` as coaching
+ * @param {*} data
+ * @param {Object} state
+ */
+function displayCoaching (data, state) {
+    // create a root div
+    const div = state.coachingRoot.appendChild(createNode('div'))
+    
+    // add time information
+    const timeStr = new Date().toLocaleString(undefined, {hour: 'numeric', minute: 'numeric', second: 'numeric'})
+    div.appendChild(createNode('div', {}, timeStr))
+
+    // add coaching
+    div.appendChild(createNode('div', {}, data))
+}
+
+/**
+ * Display `data` as a transcript
+ * @param {*} data
+ * @param {Object} state
+ */
+function displayTranscript (data, state) {
+    // create a root div
+    const div = state.transcriptRoot.appendChild(createNode('div'))
+    
+    // add time information
+    const timeStr = new Date().toLocaleString(undefined, {hour: 'numeric', minute: 'numeric', second: 'numeric'})
+    div.appendChild(createNode('div', {}, timeStr))
+
+    // add transcript
+    div.appendChild(createNode('div', {}, data))
 }
 
 window.addEventListener("load", () => onPageLoad())

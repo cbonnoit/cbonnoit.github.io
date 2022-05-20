@@ -1,122 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- styling -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/landing.css">
-    <link rel="stylesheet" href="css/style-landing.css">
-    <link rel="stylesheet" href="css/style-value-props.css">
-    <link rel="stylesheet" href="css/style-cta.css">
-
     <!-- javascript -->
-    <script src="index.js"></script>
+    <script src="index.js", type="module"></script>
 
-    <title>Trellus | Empower individuals to change culture</title>
-    <link rel="icon" href="img/logo.svg" type="image/x-icon">
-    <meta name="description" content="Use AI to supercharge your organization's cultural journey on equity, inclusivity, engagement, and retention.">
+    <title>Repper | Reps for reps </title>
+    <!--  <link rel="icon" href="img/logo.svg" type="image/x-icon">  -->
+    <meta name="description" content="Onboard salespeople faster">
+
+    <!-- get fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+        }
+
+        .flexRow {
+            display: flex;
+            align-items: center;
+            align-content: center;
+            justify-content: space-evenly;
+        }
+
+        .button {
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .statusButton {
+            height: 15px;
+            width: 15px;
+            border-radius: 8px;
+            margin: 5px;
+        }
+
+        .button:hover {
+            box-shadow: 3px 6px 6px rgba(0, 0, 0, 0.5);
+        }
+
+    </style>
+
 </head>
 
 <body style="margin: 0">
-    <!-- Landing panel -->
-    <div class="panel-wrapper-2-1" id="landing">
-        <div class="panel-inner">
-            <img src="img/landing-background.svg" style="position: absolute; width: 100%; height: 100%" alt="Background">
+    <!-- header bar -->
+    <div class="flexRow", style="justify-content: flex-end; width: 100%; background-color: lightgray;">
+        <div class="flexRow", style="margin: 5px">
+            Coaching:
+            <div class="button statusButton", id="toggleCoaching"></div>
         </div>
-
-        <div class="panel-inner" id="contents">
-            <img src="img/landing-logo.svg" style="position: absolute; top: 3%; left: 3%; min-width: 5%; max-width: 10%;" alt="Logo">
-
-            <!-- landing panel content -->
-            <div style="display: flex; flex-direction: row; height: 100%; align-items: center">
-                <div id="landing-text-column">
-                    <h1>Empower individuals to be change agents</h1>
-                    <text>Unlock your organization’s full potential for creating an equitable, inclusive, and engaged culture. Get started for free.</text>
-                    <div style="display: flex; flex-direction: row; margin-top: 3vmin; justify-content: space-between">
-                        <div id="cta-start" class="button primary-cta">
-                            <div class="button-text">Start trial</div>
-                        </div>
-                        <div id="cta-join" class="button secondary-cta">
-                            <div class="button-text">Stay informed</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <img id="landing-screenshot" src="img/slack-landing.svg" style="position: absolute; width: 35%; left: 55%; top: 27%" alt="Product screenshot">
+        <div class="flexRow", style="margin: 5px">
+            Transcript:
+            <div class="button statusButton", id="toggleTranscript"></div>
         </div>
     </div>
 
-    <!--- value props --->
-    <div style="display: flex; flex-direction: column; align-items: center; padding-bottom: 8vmin">
-        <h1 style="padding: 8vmin 20vmin;">Get the most out of opportunities for change with real-time insights</h1>
-        <div id="value-box-container" style="display: flex; flex-direction: row; padding-bottom: 4vmin">
-            <div class="value-box" data-prop="equity" data-value-box-selected="true">
-                <img src="img/equity.svg" alt="Equity icon">
-                <h2>Improve equity</h2>
-                <text>Eliminate hidden biases and prevent problems from occurring.</text>
-            </div>
-
-            <div class="value-box" data-prop="inclusion">
-                <img src="img/inclusion.svg" alt="Inclusion icon">
-                <h2>Foster inclusion</h2>
-                <text>Invite participation and encourage belonging by scaling best practices.</text>
-            </div>
-
-            <div class="value-box" data-prop="engagement">
-                <img src="img/engagement.svg" alt="Engagement icon">
-                <h2>Create engagement</h2>
-                <text>Adapt dialogue to energize others by respecting differences.</text>
-            </div>
-
-            <div class="value-box" data-prop="retention">
-                <img src="img/retention.svg" alt="Retention icon">
-                <h2>Increase retention</h2>
-                <text>Identify changes in key relations early to nurture with impact.</text>
-            </div>
-        </div>
-
-        <div style="display: flex; flex-direction: row; align-items: center">
-            <div class="arrow-left" id="value-arrow-left"></div>
-            <div style="width: 60vmin">
-                <img class="value-screenshot" data-prop="equity" src="img/slack-equity.svg" alt="Equity product screenshot" data-value-box-selected="true">
-                <img class="value-screenshot" data-prop="inclusion" src="img/slack-inclusion.svg" alt="Inclusion product screenshot">
-                <img class="value-screenshot" data-prop="engagement" src="img/slack-engagement.svg" alt="Engagement product screenshot">
-                <img class="value-screenshot" data-prop="retention" src="img/slack-retention.svg" alt="Retention product screenshot">
-            </div>
-            <div class="arrow-right" id="value-arrow-right"></div>
-        </div>
+    <!-- coaching -->
+    <div style="display: flex; align-items: stretch; width: 100%; height: calc(100vh - 40px)">
+        <div id="coachingRoot", style="width: 50%; height: 100%; border-right: 2px solid gray;"></div>
+        <div id="transcriptRoot", style="width: 50%; height: 100%"></div>
     </div>
-
-    <!-- integration -->
-    <div class="panel-wrapper-2-1" id="integrate">
-        <div class="panel-inner" id="integrate-background">
-            <img src="img/integrate-background.svg" style="position: absolute; width: 100%; height: 100%" alt="Background">
-        </div>
-        <div class="panel-inner">
-            <h1 style="padding: 8vmin 20vmin; color: black">
-                Integrate in seconds for a unified view of digital communications
-            </h1>
-            <img src="img/integrate.svg" alt="Product integrations" style="width: 50%; margin-left: 25%">
-        </div>
-    </div>
-
-    <!-- copyright -->
-    <div style="width:100%; background: #4B5D64">
-        <div style="display: flex; align-items: center; padding-top: 6vmin; padding-bottom: 3vmin; justify-content: space-evenly">
-            <img src="img/landing-logo.svg" style="width: 10%;" alt="Logo">
-            <text style="color: #A1CA43; font-size: 1.5vw">© Copyright 2021. All rights reserved.</text>
-        </div>
-    </div>
-
-    <!-- cta -->
-    <div id="cta-frame" style="display: none">
-        <div id="cta-background"></div>
-        <div id="cta-inner-frame">
-            <h2 id="cta-header"></h2>
-            <div id="cta-field-container"></div>
-            <div id="cta-submit" class="button primary-cta">
-                <div class="button-text">Submit</div>
-            </div>
-        </div>
-    </div>
-
+    
 </body>
