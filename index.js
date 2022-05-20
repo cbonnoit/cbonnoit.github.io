@@ -39,8 +39,8 @@ function updateStateParameters (state) {
     // use the url query params to extract host, conversation, and coaching identifiers
     const params = new URL(document.location).searchParams
     state.host = params.get('host')
-    state.conversationId = params.get('conversationId')
-    state.partyId = parseInt(params.get('partyId'))
+    state.conversationId = params.get('conversation_id')
+    state.partyId = parseInt(params.get('party_id'))
     state.goal = params.get('goal')
 }
 
@@ -92,12 +92,12 @@ function connectSocket (state, {isCoaching=false, isTranscript=false}) {
 
     // define socket connetion url
     // note: ws: did not work (perhaps because ngrok is only mapping https?)
-    const endpoint = isCoaching ? 'client' : 'subscribe-transcript'
+    const endpoint = isCoaching ? 'subscribe-coaching' : 'subscribe-transcript'
     let queryParams
     if (isCoaching)
-        queryParams = {conversationId: state.conversationId, partyId: state.partyId, goal: state.goal}
+        queryParams = {conversation_id: state.conversationId, party_id: state.partyId, goal: state.goal}
     else 
-        queryParams = {conversationId: state.conversationId}
+        queryParams = {conversation_id: state.conversationId}
     const queryString = new URLSearchParams(queryParams).toString()
     const socketUrl = `wss://${state.host}/${endpoint}?${queryString}`
     
