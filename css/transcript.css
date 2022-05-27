@@ -1,0 +1,35 @@
+#transcriptRoot {
+  overflow-y: auto;
+  justify-content: flex-start;
+}
+
+.transcript {
+  width: 90%;
+  align-items: stretch;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 14px
+}
+
+.transcriptTime {
+  font-size: 12px;
+  width: 10%;
+  height: 100%;
+  color: #888;
+}
+
+.transcriptNameContent {
+  width: 90%;
+  height: 100%
+}
+
+.transcriptName {
+  font-weight: bold;
+  color: #222
+}
+
+.transcriptContent {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555
+}

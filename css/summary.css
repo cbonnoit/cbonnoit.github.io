@@ -1,0 +1,32 @@
+#summaryRoot {
+  overflow-y: auto;
+}
+
+.summary {
+  width: 90%;
+  align-items: stretch;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.summaryName {
+  width: 15%;
+}
+
+.summaryRight {
+  width: 85%;
+}
+
+.summaryIntervalContainer{
+  position: relative;
+}
+
+.summaryIntervalContainer > div {
+  position: absolute;
+  background-color: #ccc;
+  height: 10px;
+}
+
+.summaryEventContainer {
+  position: absolute;
+}
