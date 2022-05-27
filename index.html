@@ -13,73 +13,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
 
-    <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-            font-size: 20px;
-        }
-
-        .flexRow {
-            display: flex;
-            align-items: center;
-            align-content: center;
-            justify-content: space-evenly;
-        }
-
-        .flexColumn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            align-content: center;
-            justify-content: space-evenly;
-        }
-
-        .button {
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .statusButton {
-            height: 15px;
-            width: 15px;
-            border-radius: 8px;
-            margin: 5px;
-        }
-
-        .button:hover {
-            box-shadow: 3px 6px 6px rgba(0, 0, 0, 0.5);
-        }
-
-    </style>
+    <!-- get styles  -->
+    <link href="./css/base.css", rel="stylesheet">
+    <link href="./css/session.css", rel="stylesheet">
+    <link href="./css/transcript.css", rel="stylesheet">
+    <link href="./css/summary.css", rel="stylesheet">
 
 </head>
 
-<body style="margin: 0">
+<body style="margin: 0" id="pageRoot">
     <!-- header bar -->
-    <div class="flexRow", style="justify-content: flex-end; width: 100%; background-color: lightgray;">
-        <div class="flexRow", style="margin: 5px">
-            Coaching:
-            <div class="button statusButton", id="toggleCoaching"></div>
-        </div>
-        <div class="flexRow", style="margin: 5px">
-            Transcript:
-            <div class="button statusButton", id="toggleTranscript"></div>
+    <div id="headerRoot">
+        <div class="flexRow full", style="justify-content: flex-end; background-color: #F3F3F3;">
+            <div class="flexRow", style="margin: 0 15px 0 5px">
+                Coaching:
+                <div class="button statusButton", id="coachingStatus"></div>
+            </div>
+            <div class="flexRow", style="margin: 0 15px 0 5px">
+                Transcript:
+                <div class="button statusButton", id="transcriptStatus"></div>
+            </div>
         </div>
     </div>
 
-    <!-- coaching -->
-    <div class="flexColumn", style="display: relative; align-items: stretch; width: 100%; height: calc(100vh - 40px)">
-        <div class="flexRow", style="display: relative; height: 70%; width: 100%">
-            <div class="flexColumn" id="coachingRoot", style="width: 50%; height: 100%; position: relative">
-                <div id="coachingPrompt", class="flexRow", hidden></div>
+    <!-- coaching + transcript / talk times -->
+    <div id="notHeaderRoot">
+        <div class="flexColumn full">
+            <div class="flexRow full", style="height: 80%; border-bottom: 2px solid #F3F3F3">
+                <div class="flexColumn full" id="coachingRoot", style="width: 50%; border-right: 2px solid #F3F3F3">
+                    <div id="coachingPrompt", class="flexColumn", style="font-size: 40px"></div>
+                </div>
+                <div class="flexColumn full" id="transcriptRoot", style="width: 50%"></div>
             </div>
-            <div class="flexColumn" id="transcriptRoot", style="width: 50%; height: 100%; border-left: 2px solid gray;"></div>
+            <div class="flexColumn" id="summaryRoot" style="width: 100%; height: 20%"></div>
         </div>
-        <div style="display: relative; height: 30%; width: 100%; border-top: 2px solid gray">
-            <div class="flexColumn", id="activityChart"></div>
-        </div>
-    </div>
-    
+    </div>    
 </body>

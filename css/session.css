@@ -1,0 +1,25 @@
+#pageRoot {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#headerRoot {
+  position: relative;
+  width: 100%;
+  height: 50px;
+}
+
+#notHeaderRoot {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 50px)
+}
+
+.statusButton {
+  height: 15px;
+  width: 15px;
+  border-radius: 8px;
+  margin: 5px;
+}
+
