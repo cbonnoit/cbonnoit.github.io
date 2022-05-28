@@ -1,6 +1,3 @@
-// host name
-export const HOST_NAME = 'd228-108-21-57-184.ngrok.io'
-
 // endpoints - keep in sync with server implementation
 export const SUBSCRIBE_TRANSCRIPT_ENDPOINT = 'subscribe-transcript'
 export const SUBSCRIBE_COACHING_ENDPOINT = 'subscribe-coaching'
