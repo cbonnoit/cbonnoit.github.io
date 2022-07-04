@@ -1,4 +1,4 @@
-import { SessionManager } from "./lib/app/session-manager.js"
+import { SessionManager } from "../../lib/app/session-manager.js"
 
 
 function onPageLoad () {

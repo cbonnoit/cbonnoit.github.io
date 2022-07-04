@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- javascript -->
+    <script src="index.js", type="module"></script>
+
+    <title>Repper | Reps for reps </title>
+    <!--  <link rel="icon" href="img/logo.svg" type="image/x-icon">  -->
+    <meta name="description" content="Onboard salespeople faster">
+
+    <!-- get fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+    <!-- get styles  -->
+    <link href="../../css/layout.css", rel="stylesheet">
+    <link href="../../css/components.css", rel="stylesheet">
+    <link href="../../css/session.css", rel="stylesheet">
+    <link href="../../css/transcript.css", rel="stylesheet">
+    <link href="../../css/summary.css", rel="stylesheet">
+
+</head>
+
+<body style="margin: 0" id="pageRoot">
+    <!-- header bar -->
+    <div id="headerRoot">
+        <div class="flexRow full", style="justify-content: flex-end; background-color: #F3F3F3;">
+            <div class="flexRow", style="margin: 0 15px 0 5px">
+                Coaching:
+                <div class="healthIndicator", id="coachingStatus"></div>
+            </div>
+            <div class="flexRow", style="margin: 0 15px 0 5px">
+                Transcript:
+                <div class="healthIndicator", id="transcriptStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- coaching + transcript / talk times -->
+    <div id="notHeaderRoot">
+        <div class="flexColumn full">
+            <div class="flexRow full", style="height: 80%; border-bottom: 2px solid #F3F3F3">
+                <div class="flexColumn full" id="coachingRoot", style="width: 50%; border-right: 2px solid #F3F3F3">
+                    <div id="coachingPrompt", class="flexColumn", style="font-size: 40px"></div>
+                </div>
+                <div class="flexColumn full" id="transcriptRoot", style="width: 50%"></div>
+            </div>
+            <div class="flexColumn" id="summaryRoot" style="width: 100%; height: 20%"></div>
+        </div>
+    </div>    
+</body>
