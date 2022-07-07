@@ -83,3 +83,84 @@
 }
 
 
+
+/*
+* Custom selects act like input fields
+*/
+
+/* styling for the persistent frame and selected choice*/
+user-select {
+  position: relative;
+  border: solid 1px rgba(91, 101, 124, 0.3);
+  border-radius: 10px;
+  background-color: #F6F7F9;
+  stroke: rgba(91, 101, 124, 0.3);
+  width: 300px;
+  height: 40px;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+user-select:not([expanded]):after {
+  content: "\fe40";
+  position: absolute;
+  top: 38%;
+  right: 10%;
+  font-size: 10px;
+}
+
+user-select > div:not(.choiceRoot) {
+  display: none
+}
+
+user-select > div[selected]:not(.choiceRoot) {
+  display: block;
+  position: relative;
+  padding: 10px;
+}
+
+user-select[expanded] > div:not(.choiceRoot) {
+  display: none
+}
+
+/* styling for full menue in choice root*/
+user-select > .choiceRoot {
+  display: none;
+  position: absolute;
+  border: solid 1px rgba(91, 101, 124, 0.3);
+  border-radius: 10px;
+  background-color: #F6F7F9;
+  stroke: rgba(91, 101, 124, 0.3);
+  width: 100%;
+  min-height: 20px;
+  box-sizing: border-box;
+}
+
+user-select[expanded] > .choiceRoot {
+  display: block;
+}
+
+user-select > .choiceRoot > div {
+  height: 40px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: solid 1px rgba(91, 101, 124, 0.3);
+  border-bottom: solid 1px rgba(91, 101, 124, 0.3);
+}
+
+user-select > .choiceRoot > div:hover {
+  background-color: #DDD;
+}
+
+user-select > .choiceRoot :first-child {
+  border-top: none;
+  padding-top: 10px;
+  border-radius: 10px 10px 0 0;
+}
+
+user-select > .choiceRoot :last-child {
+  border-bottom: none;
+  padding-bottom: 10px;
+  border-radius: 0 0 10px 10px ;
+}

@@ -1,0 +1,66 @@
+<head>
+  <script src="../../lib/components/dropdown.js", type="module"></script>
+
+  <link href="../../css/layout.css", rel="stylesheet">
+  <link href="../../css/components.css", rel="stylesheet">
+</head>
+
+<body class="frame">
+  <div class="header">Get coaching in an upcoming Zoom meeting</div>
+  
+  <div class="blockPrimary">
+    <div class="input">
+      <div class="inputLabel">Meeting URL</div>
+      <div class="inputField", contenteditable="true", data-field="url", style="width: 500px"></div>
+    </div>
+
+    <div class="input">
+      <div class="inputLabel">Meeting time</div>
+      <div class="flexRow", style="justify-content: flex-start;">
+        <user-select data-field="hour" style="width: 50px; margin-right: 5;">
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div>10</div>
+          <div>11</div>
+          <div selected="true">12</div>
+        </user-select>
+        :
+        <user-select data-field="minute" style="width: 50px; margin-left: 5px; margin-right: 10px;">
+          <div selected="true">00</div>
+          <div>15</div>
+          <div>30</div>
+          <div>45</div>
+        </user-select>
+  
+        <user-select data-field="ampm" style="width: 60px; margin-left: 10px; margin-right: 10px;">
+          <div>AM</div>
+          <div selected="true">PM</div>
+        </user-select>
+  
+        <user-select data-field="timezone" style="width: 100px; margin-left: 10px; margin-right: 10px;">
+          <div selected="true">Eastern</div>
+          <div>Central</div>
+          <div>Mountain</div>
+          <div>Pacific</div>
+        </user-select>
+      </div>
+    </div>
+    
+
+  </div>
+
+  <div class="flexRow" style="justify-content: flex-start;">
+    <div class="button ctaPrimary", id="signup">
+      Submit
+    </div>
+  </div>
+
+  <div id="status"></div>
+</body>
