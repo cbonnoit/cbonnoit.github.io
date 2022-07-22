@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- javascript -->
+    <script src="index.js", type="module"></script>
+
+    <title>Repper | Reps for reps </title>
+    <!--  <link rel="icon" href="img/logo.svg" type="image/x-icon">  -->
+    <meta name="description" content="Onboard salespeople faster">
+
+    <!-- get fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+
+    <link href="../../css/layout.css", rel="stylesheet">
+    <link href="../../css/coach.css", rel="stylesheet">
+    <!-- get styles  -->
+</head>
+<body>
+    <div id="coach-root" style="visibility: hidden">
+        <div class="trellus-main">
+            <div class="trellus-recording-header">
+                <img class="trellus-recording-close" src="../../images/close_v2.png"/>
+                <div class="trellus-menu" id="trellusMenu">
+                    <img class="trellus-menu-bar-icon" id="settingsMenuIcon" src="../../images/settings_icon.png" />
+                    <div class="trellus-menu-bar closed" id="settingsMenu"></div>
+                </div>
+                <img class="trellus-move-icon" id="moveMenu" src="../../images/move.png"/>
+                <img class="trellus-mic-icon" id="micMenu" src="../../images/microphone.png"/>
+            </div>
+
+            <div class="trellus-progress-bar-container closed" id='progressBarContainer'>
+                <div>
+                    <div class="trellus-progress-bar-current" id='current-stage'>Current: TBD</div>
+                    <div class="trellus-progress-bar-next" id='next-stage'>Up Next: TBD</div>
+                </div>
+
+                <div class="trellus-progress-bar-background">
+                    <div class="trellus-progress-bar-filler" id='progress-bar'></div>
+                </div>
+            </div>
+
+            <div class='trellus-guidance'>
+                <div id='objection' class='flexColumn'>
+                    <div id='objection-header'></div>
+                    <div id='objection-container' class='flexColumn'></div>
+                </div>
+                <div class="trellus-guidance-checklist" id="checklist">
+                </div>
+                <div class='trellus-guidance-behavioral' id='behavioral'>
+                    <div class='behavioral-color' id='behavioral-color'></div>
+                    <div class='behavioral-text' id='behavioral-text'>Great job!</div>
+                </div>
+            </div>
+
+            <div class="trellus-recording-footer">
+                <img class="trellus-recording-logo" src="../../images/128.png"/>
+                <div class="trellus-summary" id="trellus-summary"></div>
+            </div>
+
+        </div>
+        <div class="trellus-transcript-box closed" id='transcriptRoot'></div>
+    </div>
+</body>
