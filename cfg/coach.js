@@ -13,7 +13,7 @@ export const SETTING_TO_TARGET_ELEMENT_MAP = Object.freeze({
 });
 
 export const PROMPT_TYPES = Object.freeze({
-    SUMMARY: 'SUMMARY',
+    SUMMARY_V2: 'SUMMARY_V2',
     MONOLOG: 'MONOLOG',
     NEXT_STEPS: 'NEXT_STEPS',
     CADENCE_FAST: 'CADENCE_FAST',
