@@ -8,17 +8,15 @@ function onPageLoad () {
 }
 
 function receiveMessage (event) {
-    if (event.origin === "https://app.salesloft.com") {
-        const data = event.data
-        const procedure = data['type']
-        if (procedure === 'sessionInformation') {
-            const session = data['session']
-            window._coachingSession = new CoachingManager(session)
-        } else if (procedure === 'stopDrag') {
-            document.querySelector('.trellus-transcript-box').classList.remove(DISABLED)
-            document.querySelector('.trellus-main').classList.remove(DISABLED)
-            document.querySelector('.text-cover').remove()
-        }
+    const data = event.data
+    const procedure = data['type']
+    if (procedure === 'sessionInformation') {
+        const session = data['session']
+        window._coachingSession = new CoachingManager(session)
+    } else if (procedure === 'stopDrag') {
+        document.querySelector('.trellus-transcript-box').classList.remove(DISABLED)
+        document.querySelector('.trellus-main').classList.remove(DISABLED)
+        document.querySelector('.text-cover').remove()
     }
 }
 
