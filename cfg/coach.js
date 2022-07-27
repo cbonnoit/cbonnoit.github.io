@@ -38,5 +38,3 @@ export const PROMPTS_TO_ONLY_DEMO_MODE = Object.freeze({
     SEQUENCE: true,
     OBJECTION_RESPONSE: false
 })
-
-export const DEMO_MODE = false
