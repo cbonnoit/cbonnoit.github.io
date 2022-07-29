@@ -232,23 +232,6 @@
     transition: all 0.5s ease-in-out;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-behavioral .behavioral-color {
-    margin-right: 5px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #13ad2d;
-    border: 1px solid #000;
-    color: #000;
-    text-align: center;
-}
-
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-behavioral .behavioral-text {
-    font-size: 12px;
-    color: black;
-    text-align: center;
-}
-
 #coach-root .trellus-main .trellus-recording-footer {
     position: relative;
     display: flex;
@@ -365,4 +348,10 @@
     width: 0;
     height: 0;
     border: none;
+}
+
+#coach-root .behavioral-guidance-img {
+    width: 100px;
+    height: 100px;
+    transition: all 0.25s ease-in-out;
 }

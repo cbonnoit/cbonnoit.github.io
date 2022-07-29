@@ -23,6 +23,11 @@ export const PROMPT_TYPES = Object.freeze({
 
 export const BEHAVIORAL_PROMPTS = [PROMPT_TYPES.MONOLOG, PROMPT_TYPES.NEXT_STEPS, PROMPT_TYPES.CADENCE_FAST]
 
+export const BEHAVIORAL_PROMPTS_TO_IMAGE = Object.freeze({
+    [PROMPT_TYPES.MONOLOG]: '/images/monologue.png',
+    [PROMPT_TYPES.CADENCE_FAST]: '/images/slow_down.png'
+})
+
 export const SETTING_TO_ONLY_DEMO_MODE = Object.freeze({
     [SETTINGS.BEHAVIORAL_COACHING]: false,
     [SETTINGS.PROGRESS_BAR]: true,
