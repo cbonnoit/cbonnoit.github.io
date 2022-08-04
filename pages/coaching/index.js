@@ -16,7 +16,10 @@ function receiveMessage (event) {
     } else if (procedure === 'stopDrag') {
         document.querySelector('.trellus-transcript-box').classList.remove(DISABLED)
         document.querySelector('.trellus-main').classList.remove(DISABLED)
-        document.querySelector('.text-cover').remove()
+        const textCover = document.querySelector('.text-cover')
+        if (textCover) textCover.remove()
+    } else if (procedure === 'callEnded') {
+        window._coachingSession.callEnded()
     }
 }
 
