@@ -10,11 +10,11 @@
 }
 
 .summaryName {
-  width: 15%;
+  width: 25%;
 }
 
 .summaryRight {
-  width: 85%;
+  width: 65%;
 }
 
 .summaryIntervalContainer{
@@ -29,4 +29,8 @@
 
 .summaryEventContainer {
   position: absolute;
+}
+
+.summaryPercentage {
+  width: 10%
 }
