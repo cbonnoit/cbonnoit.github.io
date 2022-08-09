@@ -2,6 +2,7 @@ import {simpleFetchAndCheck} from "../../lib/network.js";
 import {SERVICE_HOSTNAME, SIGNUP_USER_ENDPOINT, EXTENSION_ID} from "../../cfg/endpoints.js";
 
 var _extension_id = EXTENSION_ID
+var _forceServiceHostname = null
 
 window.addEventListener("load", () => onPageLoad())
 
@@ -14,6 +15,7 @@ function receiveMessage (event) {
     const dataType = data['type']
     if (dataType === 'TRELLUS_EXTENSION_ID') {
         _extension_id = data['detail']
+        _forceServiceHostname = data['forceServiceHostname']
         const node = document.querySelector('#submit')
         node.addEventListener('click', () => signup())
     }
@@ -48,7 +50,8 @@ function receiveMessage (event) {
  */
 export async function signupUser (email, name, team, password) {
     // make the request
-    const url = `https://${SERVICE_HOSTNAME}/${SIGNUP_USER_ENDPOINT}`
+    const hostname = _forceServiceHostname ?? SERVICE_HOSTNAME
+    const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
     const parameters = {'email': email, 'name': name, 'team': team, 'password': password}
     const result = await simpleFetchAndCheck(url, parameters, true)
   
