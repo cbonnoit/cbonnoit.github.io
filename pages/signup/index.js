@@ -4,7 +4,11 @@ import {SERVICE_HOSTNAME, SIGNUP_USER_ENDPOINT, EXTENSION_ID} from "../../cfg/en
 var _extension_id = EXTENSION_ID
 var _forceServiceHostname = null
 
+// start listening for extension specific information
 window.addEventListener("load", () => onPageLoad())
+
+// add envent listener for click
+document.querySelector('#submit').addEventListener('click', () => signup())
 
 function onPageLoad () {
     window.addEventListener("message", receiveMessage, false);
@@ -16,8 +20,6 @@ function receiveMessage (event) {
     if (dataType === 'TRELLUS_EXTENSION_ID') {
         _extension_id = data['detail']
         _forceServiceHostname = data['forceServiceHostname']
-        const node = document.querySelector('#submit')
-        node.addEventListener('click', () => signup())
     }
 }
 
@@ -50,11 +52,13 @@ function receiveMessage (event) {
  */
 export async function signupUser (email, name, team, password) {
     // make the request
+    console.log('Forming signup user request')
     const hostname = _forceServiceHostname ?? SERVICE_HOSTNAME
     const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
     const parameters = {'email': email, 'name': name, 'team': team, 'password': password}
     const result = await simpleFetchAndCheck(url, parameters, true)
   
+    console.log('Got user signup response')
     chrome.runtime.sendMessage(_extension_id, {type: 'API_KEY_UPDATE', apiKey: result['api_key']},
     function(response) {
         if (!response.success) {
