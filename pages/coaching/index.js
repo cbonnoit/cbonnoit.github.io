@@ -12,10 +12,10 @@ function receiveMessage (event) {
     const procedure = data['type']
     if (procedure === 'sessionInformation') {
         const session = data['session']
-        window._coachingSession = new CoachingManager(session, data['demoMode'], data['consolidatedEndpoint'])
+        window._coachingSession = new CoachingManager(session, data['demoMode'])
     } else if (procedure === 'stopDrag') {
         document.querySelector('.trellus-transcript-box').classList.remove(DISABLED)
-        document.querySelector('.trellus-main').classList.remove(DISABLED)
+        document.querySelectorAll('.main').forEach((element) => element.classList.remove(DISABLED))
         const textCover = document.querySelector('.text-cover')
         if (textCover) textCover.remove()
     } else if (procedure === 'callEnded') {
