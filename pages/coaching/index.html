@@ -18,47 +18,64 @@
     <link href="../../css/coach.css", rel="stylesheet">
     <!-- get styles  -->
 </head>
-<body>
+<body style="overflow: hidden;">
     <div id="coach-root" style="visibility: hidden">
-        <div class="trellus-main">
-            <div class="trellus-recording-header">
-                <img class="trellus-recording-close" src="../../images/close_v2.png"/>
-                <div class="trellus-menu" id="trellusMenu">
-                    <img class="trellus-menu-bar-icon" id="settingsMenuIcon" src="../../images/settings_icon.png" />
-                    <div class="trellus-menu-bar closed" id="settingsMenu"></div>
+        <div class="coaching-main">
+            <div class="main" id="behavioral-main">
+                <div class="trellus-recording-header">
+                    <img class="trellus-recording-close" id="main-close" src="../../images/close_v2.png"/>
+                    <img class="trellus-setting-icon" id="moveMenu" src="../../images/move.png"/>
+                    <img class="trellus-setting-icon" id="localMenu" src="../../images/local-icon.png"/>
+                    <img class="trellus-setting-icon" id="objectionMenu" src="../../images/objection-icon.png"/>
+                    <img class="trellus-setting-icon" id="micMenu" src="../../images/microphone.png"/>
                 </div>
-                <img class="trellus-move-icon" id="moveMenu" src="../../images/move.png"/>
-                <img class="trellus-mic-icon" id="micMenu" src="../../images/microphone.png"/>
+
+                <div class='trellus-guidance'>
+                    <div class='trellus-guidance-behavioral''>
+                        <div id="buyingSignal" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value: 0"></div>
+                        Meeting signal
+                    </div>
+
+                    <div class='trellus-guidance-behavioral' id='behavioral'>
+                        <img class="behavioral-guidance-img" id="behavioral-guidance-img" src="../../images/great_work.png"/>
+                    </div>
+                </div>
+
+                <div class="trellus-recording-footer">
+                    <div class="trellus-summary" id="trellus-summary"></div>
+                </div>
+            </div>
+            
+            <div class="main add-margin" id="local-main">
+                <div class="trellus-recording-header">    
+                    <img class="trellus-recording-close" id="local-close" src="../../images/close_v2.png"/>
+                    <div style="margin-right:  auto;">Local weather &amp; news</div>
+                    <img class="trellus-setting-icon no-pointer" id="localMenu" src="../../images/local-icon.png"/>
+                </div>
+                <div class="weather" id="weather-main">
+                    <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
+                </div>
             </div>
 
-            <div class="trellus-progress-bar-container closed" id='progressBarContainer'>
-                <div>
-                    <div class="trellus-progress-bar-current" id='current-stage'>Current: TBD</div>
-                    <div class="trellus-progress-bar-next" id='next-stage'>Up Next: TBD</div>
+            <div class="main add-margin" id="objection-main">
+                <div class="trellus-recording-header">    
+                    <img class="trellus-recording-close" id="objection-close" src="../../images/close_v2.png"/>
+                    <div style="margin-right:  auto;" id="objection-header">Suggestions</div>
+                    <img class="trellus-setting-icon no-pointer" src="../../images/objection-icon.png"/>
                 </div>
-                <div class="trellus-progress-bar-background">
-                    <div class="trellus-progress-bar-filler" id='progress-bar'></div>
-                </div>
-            </div>
-
-            <div class='trellus-guidance'>
                 <div id='objection' class='flexColumn'>
-                    <div id='objection-header'></div>
+                    <div class="placeholder-text" id="objection-placeholder-text" >Listening for objections...</div>
                     <div id='objection-container' class='flexColumn'></div>
                 </div>
-                <div class="trellus-guidance-checklist" id="checklist">
-                </div>
-                <div class='trellus-guidance-behavioral' id='behavioral'>
-                    <img class="behavioral-guidance-img" id="behavioral-guidance-img" src="../../images/great_work.png"/>
-                </div>
-            </div>
-
-            <div class="trellus-recording-footer">
-                <img class="trellus-recording-logo" src="../../images/128.png"/>
-                <div class="trellus-summary" id="trellus-summary"></div>
+                <div class="trellus-guidance-checklist" id="checklist"></div>
             </div>
 
         </div>
-        <div class="trellus-transcript-box closed" id='transcriptRoot'></div>
+        <div class="trellus-transcript-box" id='transcriptRoot'>
+            <div class="trellus-recording-header">    
+                <img class="trellus-recording-close" id="transcript-close" src="../../images/close_v2.png"/>
+                <img class="trellus-setting-icon no-pointer" src="../../images/microphone.png"/>
+            </div>
+        </div>
     </div>
 </body>

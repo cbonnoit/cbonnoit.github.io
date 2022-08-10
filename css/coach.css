@@ -16,17 +16,33 @@
     box-sizing: border-box;
 }
 
-#coach-root .trellus-main {
+#coach-root .main {
     display: flex;
     align-items: center;
     flex-direction: column;
     align-items: flex-start;
-    max-width: fit-content;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
     padding: 6px 12px;
     border-radius: 15px;
     border: 2px solid black;
     background-color: #EEEEF0;
     box-shadow: 0px 0px 10px black;
+}
+
+#coach-root .main.closed {
+    visibility: hidden !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important
+}
+
+#coach-root .main.add-margin {
+    margin-top: 10px;
 }
 
 #coach-root .trellus-recording-header {
@@ -91,33 +107,29 @@
     transition: background-color 0.25s ease;
 }
 
-#coach-root .trellus-main .trellus-recording-header .trellus-menu .trellus-menu-bar .trellus-menu-option .menu-checkbox.checked {
+#coach-root .menu-checkbox.checked {
     background-color: black;
 }
 
-#coach-root .trellus-main .trellus-recording-header .trellus-menu .trellus-menu-bar .trellus-menu-option .menu-text {
+#coach-root .menu-text {
     font-size: 12px;
     color: black;
     text-align: left;
 }
 
 
-#coach-root .trellus-move-icon {
+#coach-root .trellus-setting-icon {
     height: 15px;
     width: auto;
     margin-left: 5px;
     cursor: pointer;
 }
 
-
-#coach-root .trellus-main .trellus-recording-header .trellus-mic-icon {
-    height: 15px;
-    width: auto;
-    margin-left: 5px;
-    cursor: pointer;
+#coach-root .trellus-setting-icon.no-pointer {
+    cursor: default;
 }
 
-#coach-root .trellus-main .trellus-progress-bar-container {
+#coach-root .trellus-progress-bar-container {
     display: flex;
     flex-direction: column;
     background-color: #d4d4dd;
@@ -128,7 +140,7 @@
     transition: all 0.5s ease-in-out;
 }
 
-#coach-root .trellus-main .trellus-progress-bar-container.closed {
+#coach-root .trellus-progress-bar-container.closed {
     visibility: hidden;
     padding: 0;
     height: 0;
@@ -136,19 +148,19 @@
     width: 0;
 }
 
-#coach-root .trellus-main .trellus-progress-bar-container .trellus-progress-bar-current {
+#coach-root .trellus-progress-bar-current {
     float: left;
     font-size: 12px;
 }
 
-#coach-root .trellus-main .trellus-progress-bar-container .trellus-progress-bar-next {
+#coach-root .trellus-progress-bar-next {
     float: right;
     font-size: 12px;
     font-style: italic;
     color: grey;
 }
 
-#coach-root .trellus-main .trellus-progress-bar-container .trellus-progress-bar-background {
+#coach-root .trellus-progress-bar-background {
     margin: auto;
     height: 3px;
     width: 100%;
@@ -156,7 +168,7 @@
     border-radius: 15px;
 }
 
-#coach-root .trellus-main .trellus-progress-bar-container .trellus-progress-bar-background .trellus-progress-bar-filler {
+#coach-root .trellus-progress-bar-filler {
     margin-right: auto;
     margin-top: auto;
     margin-bottom: auto;
@@ -171,20 +183,20 @@
     font-weight: bold;
 }
 
-#coach-root .trellus-main .trellus-guidance {
+#coach-root .trellus-guidance {
     display: flex;
     flex-direction: row;
     width: 100%;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-checklist {
+#coach-root .trellus-guidance-checklist {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     transition: all 0.5s ease-in-out;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-checklist .trellus-guidance-checklist-item {
+#coach-root .trellus-guidance-checklist-item {
     min-width: 250px;
     min-height: 30px;
     width: fit-content;
@@ -194,7 +206,7 @@
     align-items: center;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-checklist .trellus-guidance-checklist-item .checklist-checkbox {
+#coach-root .checklist-checkbox {
     aspect-ratio: 1;
     width: 15px;
     border-color: black;
@@ -204,23 +216,23 @@
     margin-right: 2px;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-checklist .trellus-guidance-checklist-item .checklist-checkbox.checked {
+#coach-root .checklist-checkbox.checked {
     background-color: black;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-checklist .trellus-guidance-checklist-item .checklist-text {
-    font-size: 12px;
+#coach-root .checklist-text {
+    font-size: 15px;
     color: black;
     text-align: left;
 }
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-checklist .trellus-guidance-checklist-item .checklist-text.checked {
+#coach-root .checklist-text.checked {
     text-decoration: line-through;
     transition: text-decoration 1s;
 }
 
 
-#coach-root .trellus-main .trellus-guidance .trellus-guidance-behavioral {
+#coach-root .trellus-guidance-behavioral {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -232,7 +244,7 @@
     transition: all 0.5s ease-in-out;
 }
 
-#coach-root .trellus-main .trellus-recording-footer {
+#coach-root .trellus-recording-footer {
     position: relative;
     display: flex;
     align-items: center;
@@ -243,44 +255,44 @@
     border-radius: 0 0 5px 5px;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-recording-logo {
+#coach-root .trellus-recording-logo {
     width: 20px;
     height: auto;
     margin-right: 10px;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary {
+#coach-root .trellus-summary {
     min-width: 180px;
     width: calc(70%);
     overflow-y: auto;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary .summary {
+#coach-root .summary {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary .summaryName {
+#coach-root .summaryName {
     min-width: 60px;
     width: 20%;
     margin-right: 5px;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary .summaryRight {
+#coach-root .summaryRight {
     float: left;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary .summaryIntervalContainer {
+#coach-root .summaryIntervalContainer {
     position: relative;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary .summaryIntervalContainer > div {
+#coach-root .summaryIntervalContainer > div {
     position: absolute;
     background-color: #ccc;
     height: 10px;
 }
 
-#coach-root .trellus-main .trellus-recording-footer .trellus-summary .summaryEventContainer {
+#coach-root .summaryEventContainer {
     position: absolute;
 }
 
@@ -295,6 +307,8 @@
     background-color: #EEEEF0;
     box-shadow: 0px 0px 10px black;
     overflow-y: scroll;
+    min-width: 450px;
+    max-width: 450px;
     width: 450px;
     height: 250px;
 }
@@ -334,7 +348,7 @@
     font-weight: bold;
 }
 
-#coach-root .trellus-main.disabled {
+#coach-root .main.disabled {
     opacity: 0.1;
 }
 
@@ -354,4 +368,84 @@
     width: 100px;
     height: 100px;
     transition: all 0.25s ease-in-out;
+}
+
+#coach-root .coaching-main {
+    flex-direction: column;
+}
+
+#coach-root .trellus-transcript-box.closed {
+    visibility: hidden;
+    padding: 0;
+    min-height: 0;
+    height: 0;
+    min-width: 0;
+    width: 0;
+    margin: 0
+}
+
+@keyframes progress {
+    0% { --percentage: 0; }
+    100% { --percentage: var(--value); }
+  }
+  
+@property --percentage {
+syntax: '<number>';
+inherits: true;
+initial-value: 0;
+}
+
+[role="progressbar"] {
+    --percentage: var(--value);
+    --primary: #369;
+    --secondary: #adf;
+    --size: 300px;
+    animation: progress 2s 0.5s forwards;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+[role="progressbar"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(from 0.66turn at 20% 100%, red 90deg, yellow, green 180deg);
+    mask: radial-gradient(at 50% 100%, white 55%, transparent 0);
+    mask-mode: alpha;
+    -webkit-mask: radial-gradient(at 50% 100%, #0000 55%, #000 0);
+    -webkit-mask-mode: alpha;
+    overflow: hidden;
+    border-radius: 50% / 100% 100% 0 0;
+}
+
+[role="progressbar"]::after {
+    content: "";
+    width: 60%;
+    height: 10%;
+    position: absolute;
+    bottom: -5%;
+    left: 0;
+    background: 
+        radial-gradient(circle at 83.33333% 50%, #fff 4%, #000 0 5%, #0000 0),
+        conic-gradient(at -20% 50%, #0000 88deg, #000 88.25deg 91.75deg, #0000 92deg);
+    transform-origin: 83.33333% 50%;
+    transform: rotate(calc(var(--value) * 180deg / 100))
+}
+
+#coach-root .weather {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto;
+}
+
+#coach-root .placeholder-text {
+    color: gray
 }
