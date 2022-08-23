@@ -1,5 +1,4 @@
 // server host url
-export const FORCE_REALTIME_HOSTNAME = null  // set to a specific hostname for local debugging
 export const SERVICE_HOSTNAME = 'api.trellus.ai'
 
 // realtime endpoints
