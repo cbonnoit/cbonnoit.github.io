@@ -19,7 +19,11 @@ function receiveMessage (event) {
         const textCover = document.querySelector('.text-cover')
         if (textCover) textCover.remove()
     } else if (procedure === 'callEnded') {
-        window._coachingSession.callEnded()
+        if (window._coachingSession === null) {
+            window.parent.postMessage({"type": "close"}, '*');
+        } else {
+            window._coachingSession.callEnded()
+        }
     }
 }
 
