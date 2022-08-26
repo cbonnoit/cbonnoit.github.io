@@ -30,6 +30,15 @@
   justify-content: flex-start;
 }
 
+.flexRowFull {
+  width: 100%;
+  display: flex;
+}
+
+.flexRowFull > * {
+  flex: 1 1 0;
+}
+
 .flexColumn {
   display: flex;
   flex-direction: column;
@@ -46,3 +55,37 @@
   justify-content: flex-start;
 }
 
+.flexColumnFull {
+  width: 100%;
+  display: flex;
+  flex-direction: column
+}
+
+.flexColumnFull > * {
+  flex: 1 1 0;
+}
+
+.panel {
+  margin: 32px;
+  padding: 32px;
+  border-radius: 12px;
+  background-color: #f6f6f6;
+}
+
+.panel-header {
+  font-size: 20px;
+  margin: 0 0 16px 0;
+}
+
+.panel-content label {
+  font-size: 16px;
+}
+
+.panel-content-block {
+  margin: 12px 0px 12px 0;
+}
+
+.panel-list > * {
+  margin: 2px;
+  width: 100%;
+}
