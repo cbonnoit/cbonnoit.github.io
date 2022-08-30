@@ -8,11 +8,12 @@ function onPageLoad () {
 function receiveMessage (event) {
   const message = event.data
   console.log(`${_LOG_SCOPE} Receiving message type ${message['type']}`)
-    if (message['type'] === 'START_COACHING') {
-        document.querySelector()
-    } else {
-      throw new Error(`[Trellus][App page] Unknown `)
-    }
+  if (message['type'] === 'START_COACHING') {
+      startSession()
+  } else {
+    throw new Error(`[Trellus][App page] Unknown `)
+  }
+  return true
 }
 
 /**
