@@ -1,4 +1,6 @@
-const _LOG_SCOPE = '[Trellus][App page extension]'
+import { APPLICATION_PAGE_MESSAGE_TYPES } from "../../cfg/endpoints.js";
+
+const _LOG_SCOPE = '[Trellus][App page]'
 
 function onPageLoad () {
   console.log(`${_LOG_SCOPE} Starting session listener`)
@@ -8,12 +10,10 @@ function onPageLoad () {
 function receiveMessage (event) {
   const message = event.data
   console.log(`${_LOG_SCOPE} Receiving message type ${message['type']}`)
-  if (message['type'] === 'START_COACHING') {
-      startSession()
-  } else {
-    throw new Error(`[Trellus][App page] Unknown `)
-  }
-  return true
+  if (message['type'] === APPLICATION_PAGE_MESSAGE_TYPES.START_COACHING)
+    startSession(message['session'])
+  else
+    console.log(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
 }
 
 /**
