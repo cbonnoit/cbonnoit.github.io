@@ -69,7 +69,7 @@ async function _endSession (sessionId) {
   if (_session == null || _session['session_id'] != sessionId) return
   _session = null
   if (_socketPromise != null) {
-    await _socketPromise.close()
+    (await _socketPromise).close()
     _socketPromise = null
   }
 }
