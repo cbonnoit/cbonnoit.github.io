@@ -54,7 +54,7 @@ function receiveMessage (event) {
 
 /**
  * Set the active session
- * @param {Object} session 
+ * @param {Object} session
  */
 async function _startSession (session) {
   logInfo(`${_LOG_SCOPE} Starting session ${session['session_id']}`)
@@ -75,15 +75,9 @@ async function _endSession (sessionId) {
 }
 
 async function _reset () {
-  // reset the session
-  _session = null
-
-  // reset the socket
-  if (_socketPromise != null) {
-    const socket = await _socketPromise
-    socket.close()
-  }
-  _socketPromise = null
+  // reset the session and socket
+  if (_session != null)
+    await _endSession(_session['session_id'])
 
   // todo: reset the ui...
 }
