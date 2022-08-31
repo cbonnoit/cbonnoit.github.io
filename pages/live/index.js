@@ -21,10 +21,15 @@ function onPageLoad () {
   
   // add responsivity to buttons
   document.querySelector('#realtimeEnabled').addEventListener('click', (ev) => {
+    // send the extension a message that realtime coaching is disabled
     chrome.runtime.sendMessage(_extensionId, {
       'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_REALTIME_ENABLED,
       'realtimeIsEnabled': ev.target.checked,
     })
+
+    // if disabling coaching, ensure that any active session is disabled
+    if (!ev.target.checked && _session != null)
+      _endSession(_session['session_id'])
   })
 }
 
@@ -33,10 +38,10 @@ function receiveMessage (event) {
   logInfo(`${_LOG_SCOPE} Receiving message type ${message['type']}`)
   switch (message['type']) {
     case MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING:
-      startSession(message['session'])
+      _startSession(message['session'])
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_END_COACHING:
-      endSession(message['sessionId'])
+      _endSession(message['sessionId'])
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
       _extensionId = message['extensionId']
@@ -51,14 +56,14 @@ function receiveMessage (event) {
  * Set the active session
  * @param {Object} session 
  */
-async function startSession (session) {
+async function _startSession (session) {
   logInfo(`${_LOG_SCOPE} Starting session ${session['session_id']}`)
-  await reset()
+  await _reset()
   _session = session
   _socketPromise = _createClientSocket(session)
 }
 
-async function endSession (sessionId) {
+async function _endSession (sessionId) {
   logInfo(`${_LOG_SCOPE} Ending session ${sessionId}`)
   // only end the session if it is the current session
   if (_session == null || _session['session_id'] != sessionId) return
@@ -69,7 +74,7 @@ async function endSession (sessionId) {
   }
 }
 
-async function reset () {
+async function _reset () {
   // reset the session
   _session = null
 
