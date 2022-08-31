@@ -11,15 +11,3 @@ export const SAVE_USER_TRIGGERS_ENDPOINT = 'save-user-triggers'
 
 // extension ID
 export const EXTENSION_ID = "enhpjjojmnlnaokmppkkifgaonfojigl"
-
-
-// message types for communicating between application pages and extension
-export const APPLICATION_PAGE_MESSAGE_TYPES = Object.freeze({
-  // from extension to app page
-  EXTENSION_ID: 'EXTENSION_ID',
-  START_COACHING: 'START_COACHING',
-
-  // from app page to extension
-  SET_REALTIME_IS_ENABLED: 'SET_REALTIME_IS_ENABLED',
-  API_KEY_UPDATE: 'API_KEY_UPDATE',
-})

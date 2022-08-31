@@ -1,25 +1,26 @@
-import {simpleFetchAndCheck} from "../../lib/network.js";
-import {SERVICE_HOSTNAME, SIGNUP_USER_ENDPOINT, EXTENSION_ID} from "../../cfg/endpoints.js";
+import { SERVICE_HOSTNAME, SIGNUP_USER_ENDPOINT, EXTENSION_ID } from "../../cfg/endpoints.js";
+import { MESSAGE_TYPES } from "../../cfg/messages.js";
+import { simpleFetchAndCheck } from "../../lib/network.js";
 
-var _extension_id = EXTENSION_ID
-var _forceServiceHostname = null
+let _extensionId = EXTENSION_ID
+let _forceServicesHostname = null
 
 // start listening for extension specific information
-window.addEventListener("load", () => onPageLoad())
+window.addEventListener("message", receiveMessage, false)
 
 // add envent listener for click
 document.querySelector('#submit').addEventListener('click', () => signup())
 
-function onPageLoad () {
-    window.addEventListener("message", receiveMessage, false);
-}
-
 function receiveMessage (event) {
-    const data = event.data
-    const dataType = data['type']
-    if (dataType === 'TRELLUS_EXTENSION_ID') {
-        _extension_id = data['detail']
-        _forceServiceHostname = data['forceServiceHostname']
+    const message = event.data
+    const messageType = message['type']
+    // todo: remove deprecated mesage type
+    if (messageType === 'TRELLUS_EXTENSION_ID') {
+        _extensionId = message['detail']
+        _forceServicesHostname = message['forceServiceHostname']
+    } else if (messageType === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
+        _extensionId = message['extensionId']
+        _forceServicesHostname = message['forceServicesHostname']
     }
 }
 
@@ -42,8 +43,7 @@ function receiveMessage (event) {
       status.textContent = e)
 }
   
-
-  /**
+/**
  * Sign up the user and store the resulting api key in local storage
  * @param {string} email
  * @param {string} name
@@ -53,16 +53,23 @@ function receiveMessage (event) {
 export async function signupUser (email, name, team, password) {
     // make the request
     console.log('Forming signup user request')
-    const hostname = _forceServiceHostname ?? SERVICE_HOSTNAME
+    const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
     const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
     const parameters = {'email': email, 'name': name, 'team': team, 'password': password}
     const result = await simpleFetchAndCheck(url, parameters, true)
   
     console.log('Got user signup response')
-    chrome.runtime.sendMessage(_extension_id, {type: 'API_KEY_UPDATE', apiKey: result['api_key']},
-    function(response) {
+    const callback = (response) => {
         if (!response.success) {
             console.log('Error in signup')
         }
-    });
+    }
+    chrome.runtime.sendMessage(_extensionId, {
+        'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
+        'apiKey': result['api_key'],
+    }, callback);
+
+    // todo: remove deprecated message type
+    chrome.runtime.sendMessage(_extensionId, {type: 'API_KEY_UPDATE', apiKey: result['api_key']}, callback);
+    
 }
