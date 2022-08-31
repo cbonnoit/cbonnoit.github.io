@@ -3,7 +3,7 @@ import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { logInfo } from "../../lib/core.js";
 import { createLoggingWebsocketPromise } from "../../lib/network.js";
 
-const _LOG_SCOPE = '[Trellus][App page]'
+const _LOG_SCOPE = '[Trellus][External page]'
 
 let _session = null
 let _socketPromise = null
@@ -28,17 +28,23 @@ function onPageLoad () {
   })
 }
 
-
 function receiveMessage (event) {
   const message = event.data
   logInfo(`${_LOG_SCOPE} Receiving message type ${message['type']}`)
-  if (message['type'] === MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING)
-    startSession(message['session'])
-  else if (message['type'] === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
-    _extensionId = message['extensionId']
-    document.querySelector('#realtimeEnabled').checked = message['realtimeEnabled']
-  } else
-    logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
+  switch (message['type']) {
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING:
+      startSession(message['session'])
+      break
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_END_COACHING:
+      endSession(message['sessionId'])
+      break
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
+      _extensionId = message['extensionId']
+      document.querySelector('#realtimeEnabled').checked = message['realtimeEnabled']
+      break
+    default:
+      logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
+  }  
 }
 
 /**
@@ -46,9 +52,21 @@ function receiveMessage (event) {
  * @param {Object} session 
  */
 async function startSession (session) {
+  logInfo(`${_LOG_SCOPE} Starting session ${session['session_id']}`)
   await reset()
   _session = session
   _socketPromise = _createClientSocket(session)
+}
+
+async function endSession (sessionId) {
+  logInfo(`${_LOG_SCOPE} Ending session ${sessionId}`)
+  // only end the session if it is the current session
+  if (_session == null || _session['session_id'] != sessionId) return
+  _session = null
+  if (_socketPromise != null) {
+    await _socketPromise.close()
+    _socketPromise = null
+  }
 }
 
 async function reset () {
@@ -82,7 +100,7 @@ async function _createClientSocket(session) {
     else if (data['weather_data'] != null)
       _updateWeather(data['weather_data'])
   }
-  return await createLoggingWebsocketPromise('clientSocket', socketUrl, callback)
+  return await createLoggingWebsocketPromise('clientSocket', socketUrl, callback, false)
 }
 
 /**
@@ -90,7 +108,7 @@ async function _createClientSocket(session) {
  * @param {Object} transcript Transcript object to add
  */
 function _updateTranscript (transcript) {
-  logInfo(transcript)
+  logInfo('got transcript')
 }
 
 /**
@@ -98,7 +116,7 @@ function _updateTranscript (transcript) {
  * @param {object} coaching
  */
 function _updateCoachingData (coaching) { 
-  logInfo(coaching)
+  logInfo('got coaching')
 }
 
 /**
@@ -106,7 +124,7 @@ function _updateCoachingData (coaching) {
  * @param {object} weather
  */
  function _updateWeather (weather) { 
-  logInfo(weather)
+  logInfo('got weather')
 }
 
 window.addEventListener("load", () => onPageLoad())
