@@ -1,4 +1,5 @@
-import { APPLICATION_PAGE_MESSAGE_TYPES } from "../../cfg/endpoints.js";
+import { EXTENSION_ID } from "../../cfg/endpoints.js";
+import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { logInfo } from "../../lib/core.js";
 import { createLoggingWebsocketPromise } from "../../lib/network.js";
 
@@ -6,20 +7,38 @@ const _LOG_SCOPE = '[Trellus][App page]'
 
 let _session = null
 let _socketPromise = null
+let _extensionId = EXTENSION_ID
 
 
+/**
+ * Main entry point to setting up javascript after page is loaded
+ */
 function onPageLoad () {
   logInfo(`${_LOG_SCOPE} Starting session listener`)
+
+  // listen for messages posted from the extension app content script
   window.addEventListener("message", receiveMessage, false);
+  
+  // add responsivity to buttons
+  document.querySelector('#realtimeEnabled').addEventListener('click', (ev) => {
+    chrome.runtime.sendMessage(_extensionId, {
+      'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_REALTIME_ENABLED,
+      'realtimeIsEnabled': ev.target.checked,
+    })
+  })
 }
+
 
 function receiveMessage (event) {
   const message = event.data
   logInfo(`${_LOG_SCOPE} Receiving message type ${message['type']}`)
-  if (message['type'] === APPLICATION_PAGE_MESSAGE_TYPES.START_COACHING)
+  if (message['type'] === MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING)
     startSession(message['session'])
-  else
-  logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
+  else if (message['type'] === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
+    _extensionId = message['extensionId']
+    document.querySelector('#realtimeEnabled').checked = message['realtimeEnabled']
+  } else
+    logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
 }
 
 /**
@@ -90,6 +109,4 @@ function _updateCoachingData (coaching) {
   logInfo(weather)
 }
 
-
 window.addEventListener("load", () => onPageLoad())
-
