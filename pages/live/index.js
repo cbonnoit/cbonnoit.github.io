@@ -87,6 +87,7 @@ async function _reset () {
  * @param {Object} session
  */
 async function _createClientSocket(session) {
+  logInfo(`${_LOG_SCOPE} Creating client socket for ${session['session_id']}`)
   const queryString = new URLSearchParams({'session_id': session['session_id']}).toString()
   const socketUrl = `wss://${session['realtime_hostname']}/${SUBSCRIBE_CLIENT_ENDPOINT}?${queryString}`
   const callback = (dataString) => {
