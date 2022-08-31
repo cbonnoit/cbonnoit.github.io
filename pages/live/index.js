@@ -1,4 +1,4 @@
-import { EXTENSION_ID } from "../../cfg/endpoints.js";
+import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { logInfo } from "../../lib/core.js";
 import { createLoggingWebsocketPromise } from "../../lib/network.js";
@@ -103,7 +103,7 @@ function _updateCoachingData (coaching) {
 
 /**
  * Update weatheer based on input
- * @param {object} coaching
+ * @param {object} weather
  */
  function _updateWeather (weather) { 
   logInfo(weather)
