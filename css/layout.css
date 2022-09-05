@@ -30,13 +30,16 @@
   justify-content: flex-start;
 }
 
+.flexRowRight {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: flex-end;
+}
+
 .flexRowFull {
   width: 100%;
   display: flex;
-}
-
-.flexRowFull > * {
-  flex: 1 1 0;
 }
 
 .flexColumn {
