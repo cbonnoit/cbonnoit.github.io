@@ -3,14 +3,12 @@
     align-items: center;
     flex-direction: column;
     align-items: flex-start;
-    width: 250px;
-    min-width: 250px;
-    max-width: 250px;
-    padding: 6px 12px;
-    border-radius: 15px;
+    border-radius: 15px 15px 10px 10px;
     border: 2px solid black;
     background-color: #EEEEF0;
     box-shadow: 0px 0px 10px black;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .main.closed {
@@ -27,11 +25,23 @@
     margin-top: 10px;
 }
 
+.panel-body {
+    padding: 6px 12px;
+    width: 250px;
+}
+
+.panel-body > * {
+    font-size: 13px;
+}
+
 .trellus-recording-header {
     display: flex;
     flex-direction: row;
     width: 100%;
     height: 25px;
+    background-color: #03214E;
+    color: white;
+    border-radius: 10px 10px 0px 0px;
 }
 
 .trellus-recording-close {
@@ -101,7 +111,7 @@
 
 
 .trellus-setting-icon {
-    height: 15px;
+    height: 40px;
     width: auto;
     margin-left: 5px;
     cursor: pointer;
@@ -245,7 +255,7 @@
 
 .trellus-summary {
     min-width: 180px;
-    width: calc(70%);
+    width: 100%;
     overflow-y: auto;
 }
 
@@ -256,7 +266,6 @@
 
 .summaryName {
     min-width: 60px;
-    width: 20%;
     margin-right: 5px;
 }
 
@@ -279,19 +288,10 @@
 }
 
 .trellus-transcript-box {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-left: 10px;
-    padding: 6px 12px;
-    border-radius: 15px;
-    border: 2px solid black;
-    background-color: #EEEEF0;
-    box-shadow: 0px 0px 10px black;
+    width: 100%;
     overflow-y: scroll;
-    min-width: 450px;
-    max-width: 450px;
-    width: 450px;
+    min-height: 250px;
+    max-height: 250px;;
     height: 250px;
 }
 
@@ -300,8 +300,12 @@
     align-items: flex-start;
 }
 
+.transcriptContent {
+    width: 80%;
+    color: black;
+}
+
 .transcriptTime {
-    min-width: 30px;
     margin-right: 5px;
 }
 
@@ -310,10 +314,7 @@
 }
 
 .transcriptName {
-    min-width: 85px;
-    width: 85px;
     word-break: break-all;
-    margin-right: 5px;
 }
 
 .text-cover {
@@ -424,10 +425,144 @@ initial-value: 0;
 .weather {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    margin: auto;
+    justify-content: center;
 }
 
 .placeholder-text {
     color: gray
+}
+
+.footer {
+    border-radius: 0px 0px 10px 10px;
+    background-color: #03214E;
+    width: 100%;
+    height: 75px;            /* Footer height */
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.enabledText {
+    min-width: 160px;
+    max-width: 160px;
+    width: 160px;
+    margin-left: 10px;
+    color: white;
+}
+
+
+.main-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 15px;
+    background-color: #5B657C;
+    height: calc(100vh - 20px);
+}
+
+.coaching-main {
+    padding: 5px;
+}
+
+.dark-mode {
+    background-color: black;
+}
+
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: black;
+    background-image: url(../images/logo.png);
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-origin: content-box;
+    background-position: center;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: lightgreen;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px lightgreen;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+
+}
+
+/* Rounded sliders */
+.slider.round {
+border-radius: 34px;
+}
+
+.slider.round:before {
+border-radius: 50%;
+}
+
+.compliance-text {
+  visibility: hidden;
+  width: 150px;
+  background-color: grey;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 8px;
+  opacity: 1;
+
+  /* Position the tooltip */
+  position: absolute;
+  left: 60px;
+  bottom: 20px;
+
+  z-index: 9999999;
+}
+
+.compliance-img {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    margin-left: 5px;
+    bottom: 45px;
+}
+
+.switch:hover .compliance-text {
+    cursor: pointer;
+    visibility: visible;
 }

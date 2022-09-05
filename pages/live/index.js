@@ -3,7 +3,7 @@ import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT } from "../../cfg/endpoints.js"
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
 import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE,
-  PROMPT_TYPES, PROMPTS_TO_ONLY_DEMO_MODE } from '../../cfg/coach.js';
+  PROMPT_TYPES } from '../../cfg/coach.js';
 import { logInfo, back } from "../../lib/core.js";
 import { createLoggingWebsocketPromise } from "../../lib/network.js";
 import { generateColor } from '../../lib/graphics.js'
@@ -25,6 +25,36 @@ let activePromptIntervalId = null
 let dismissObjectionIntervalId = null
 let promptPersistanceDuration = SEC_TO_MS * 5
 
+function setDefaultsAndClearUI () {
+  _partyCodeToColor = {}
+  _transcripts = []
+  partyToSummary = new Map()
+  
+  activePrompt = null
+  activePromptIntervalId = null
+  dismissObjectionIntervalId = null
+  promptPersistanceDuration = SEC_TO_MS * 5
+
+  // clear weather & news
+//   <div class="weather" id="weather-main">
+//   <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
+// </div>
+  const weatherElement = document.querySelector('#weather-main')
+  weatherElement.innerHTML = ''
+  weatherElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'weather-placeholder-text'}, 'Gathering weather data...'))
+
+  // clear behavioral coaching
+  _clearBehavioralSuggestion()
+  _updateBuyingIntent(0)
+
+  // clear suggestions
+  _clearObjection()
+
+  // clear transcript and summary
+  document.querySelector('#trellus-summary').innerHTML = ''
+  document.querySelector('#transcriptRoot').innerHTML = ''
+}
+
 /**
  * Main entry point to setting up javascript after page is loaded
  */
@@ -33,18 +63,21 @@ function onPageLoad () {
 
   // listen for messages posted from the extension app content script
   window.addEventListener("message", receiveMessage, false);
-  
   // add responsivity to buttons
   document.querySelector('#realtimeEnabled').addEventListener('click', (ev) => {
     // send the extension a message that realtime coaching is disabled
     chrome.runtime.sendMessage(_extensionId, {
       'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_REALTIME_ENABLED,
-      'realtimeIsEnabled': ev.target.checked,
+      'realtimeIsEnabled': ev.target.checked
     })
 
+    const updateText = ev.target.checked ? 'Coaching Enabled' : 'Coaching Disabled'
+    document.querySelector('#realtimeEnabledText').textContent =  updateText
+
     // if disabling coaching, ensure that any active session is disabled
-    if (!ev.target.checked && _session != null)
+    if (!ev.target.checked && _session != null) 
       _endSession(_session['session_id'])
+    
   })
 }
 
@@ -90,11 +123,10 @@ async function _endSession (sessionId) {
 }
 
 async function _reset () {
+  setDefaultsAndClearUI()
   // reset the session and socket
   if (_session != null)
     await _endSession(_session['session_id'])
-
-  // todo: reset the ui...
 }
 
 /**
@@ -173,13 +205,26 @@ function _extendLastTranscript (text) {
 function _addNewTranscript (text, partyCode, partyName, startTime) {
   const root = document.querySelector('#transcriptRoot')
   // create nodes
-  const transcriptRoot = root.appendChild(createNode('div', {'class': 'flexRowLeft transcript'}))
-  transcriptRoot.appendChild(createNode('div', {'class': 'flexColumn transcriptTime'}, durationToString(startTime)))
-  const nameContentNode = transcriptRoot.appendChild(createNode('div', {'class': 'transcriptNameContent'}))
-  const nameAttributes = {'class': 'transcriptName', 'style': `color: ${_partyCodeToColor[partyCode]};`}
-  nameContentNode.appendChild(createNode('div', nameAttributes, partyName))
-  const contentNode = nameContentNode.appendChild(createNode('div', {'class': 'transcriptContent'}, text))
 
+  const transcriptRoot = root.appendChild(createNode('div', {'class': 'flexColumn transcript'}))
+
+  let transcriptHeader
+  let contentStyle
+
+  if (partyCode == 0) {// prospect and should be RHS
+    transcriptHeader = transcriptRoot.appendChild(createNode('div', {'class': 'flexRow', 'style': 'margin-left: 20%'}))
+    contentStyle = 'margin-left: 20%'
+  } else {
+    transcriptHeader = transcriptRoot.appendChild(createNode('div', {'class': 'flexRow'}))
+    contentStyle = 'margin-right: 20%'
+  }
+
+  
+  transcriptHeader.appendChild(createNode('div', {'class': 'flexColumn transcriptTime'}, durationToString(startTime)))
+  const nameAttributes = {'class': 'transcriptName', 'style': `color: ${_partyCodeToColor[partyCode]};`}
+  transcriptHeader.appendChild(createNode('div', nameAttributes, partyName))
+
+  const contentNode = transcriptRoot.appendChild(createNode('div', {'class': 'transcriptContent', 'style': contentStyle}, text))  
   // store transcript information
   _transcripts.push({'partyCode': partyCode, 'contentNode': contentNode})
 }
@@ -212,6 +257,12 @@ function _updateCoachingData (coaching) {
   }
 }
 
+function _clearObjection() {
+  document.querySelector('#objection-header').textContent = 'Suggestions'
+  document.querySelector('#objection').innerHTML = '';
+  document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-placeholder-text', class: 'placeholder-text'}, "Listening for objections..."))
+  document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-container', class: 'flexColumn'}))
+}
 
 /**
  * Updates objection data with new data
@@ -237,9 +288,7 @@ function _updateTrigger (triggerName, triggerPrompt) {
 
   // add a callback dismissing the objection
   dismissObjectionIntervalId = setTimeout(() => {
-    objectionContainer.innerHTML = ''
-    document.querySelector('#objection-header').textContent = 'Objections'
-    document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-placeholder-text', class: 'placeholder-text'}, "Listening for objections..."))
+    _clearObjection()
   }, promptPersistanceDuration * 2)
 }
 
@@ -262,36 +311,6 @@ function _createCheckListElement(labelText, checked) {
   checklistItem.appendChild(checkbox)
   checklistItem.appendChild(checklistItemText)
   return checklistItem;
-}
-
-/**
- * Update the checklist with new data
- * @param {Object} data Sequence data value
- */
-function _updateChecklist (data) {
-  const checklist = document.querySelector('#checklist')
-  checklist.innerHTML = "";
-  const checklistItems = data['steps']
-  for (const item of checklistItems) {
-    checklist.appendChild(_createCheckListElement(item.label, item.checked))
-  }
-
-  //update the current stage and the next stage
-  const percentCompleted = data['percent_completed']; // comes in as a float [0, 100].
-  const currentStageText = data['current_stage'];
-  const nextStageText = data['next_stage'];
-
-  const progressBar = document.querySelector('#progress-bar');
-  const currentStageDiv = document.querySelector('#current-stage');
-  const nextStageDiv = document.querySelector('#next-stage');
-
-  progressBar.style.width = percentCompleted.toFixed() + '%'; // need to convert to a string
-  currentStageDiv.textContent = 'Current: ' + currentStageText;
-  if (nextStageText !== '') {
-    nextStageDiv.textContent = 'Up Next: ' + nextStageText;
-  } else {
-    nextStageDiv.textContent = ''; // ensures old data gets cleaned up
-  }
 }
 
 function _clearBehavioralSuggestion() {
