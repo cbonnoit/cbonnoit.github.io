@@ -1,0 +1,433 @@
+.main {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    padding: 6px 12px;
+    border-radius: 15px;
+    border: 2px solid black;
+    background-color: #EEEEF0;
+    box-shadow: 0px 0px 10px black;
+}
+
+.main.closed {
+    visibility: hidden !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important
+}
+
+.main.add-margin {
+    margin-top: 10px;
+}
+
+.trellus-recording-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 25px;
+}
+
+.trellus-recording-close {
+    margin-right: auto;
+    height: 15px;
+    width: auto;
+    cursor: pointer;
+}
+
+.trellus-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.trellus-menu-bar-icon {
+    margin-left: auto;
+    height: 15px;
+    width: 15px;
+    cursor: pointer;
+}
+
+.trellus-menu-bar {
+    visibility: visible;
+    width: 160px;
+    z-index: 1;
+    padding: 6px 12px;
+    border-radius: 15px;
+    border: 2px solid black;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px black;
+    margin-right: auto;
+}
+
+.trellus-menu-bar.closed {
+    visibility: hidden;
+}
+
+.trellus-menu-option {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 5px;
+}
+
+.menu-checkbox {
+    aspect-ratio: 1;
+    width: 15px;
+    border-color: black;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 25%;
+    margin-right: 2px;
+    transition: background-color 0.25s ease;
+}
+
+.menu-checkbox.checked {
+    background-color: black;
+}
+
+.menu-text {
+    font-size: 12px;
+    color: black;
+    text-align: left;
+}
+
+
+.trellus-setting-icon {
+    height: 15px;
+    width: auto;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.trellus-setting-icon.no-pointer {
+    cursor: default;
+}
+
+.trellus-progress-bar-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #d4d4dd;
+    width: 100%;
+    min-width: 250px;
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.5s ease-in-out;
+}
+
+.trellus-progress-bar-container.closed {
+    visibility: hidden;
+    padding: 0;
+    height: 0;
+    min-width: 0;
+    width: 0;
+}
+
+.trellus-progress-bar-current {
+    float: left;
+    font-size: 12px;
+}
+
+.trellus-progress-bar-next {
+    float: right;
+    font-size: 12px;
+    font-style: italic;
+    color: grey;
+}
+
+.trellus-progress-bar-background {
+    margin: auto;
+    height: 3px;
+    width: 100%;
+    background: #7a8185;
+    border-radius: 15px;
+}
+
+.trellus-progress-bar-filler {
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 100%;
+    width: 0;
+    border-radius: 15px;
+    background-color: #5DD077;
+    transition: width 0.5s linear;
+}
+
+#objection-header {
+    font-weight: bold;
+}
+
+.trellus-guidance {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.trellus-guidance-checklist {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    transition: all 0.5s ease-in-out;
+}
+
+.trellus-guidance-checklist-item {
+    min-width: 250px;
+    min-height: 30px;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.checklist-checkbox {
+    aspect-ratio: 1;
+    width: 15px;
+    border-color: black;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 50%;
+    margin-right: 2px;
+}
+
+.checklist-checkbox.checked {
+    background-color: black;
+}
+
+.checklist-text {
+    font-size: 15px;
+    color: black;
+    text-align: left;
+}
+
+.checklist-text.checked {
+    text-decoration: line-through;
+    transition: text-decoration 1s;
+}
+
+
+.trellus-guidance-behavioral {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    min-height: 80px;
+    min-width: 100px;
+    margin: auto;
+    transition: all 0.5s ease-in-out;
+}
+
+.trellus-recording-footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: fit-content;
+    padding: 5px;
+    width: 100%;
+    border-radius: 0 0 5px 5px;
+}
+
+.trellus-recording-logo {
+    width: 20px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.trellus-summary {
+    min-width: 180px;
+    width: calc(70%);
+    overflow-y: auto;
+}
+
+.summary {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.summaryName {
+    min-width: 60px;
+    width: 20%;
+    margin-right: 5px;
+}
+
+.summaryRight {
+    float: left;
+}
+
+.summaryIntervalContainer {
+    position: relative;
+}
+
+.summaryIntervalContainer > div {
+    position: absolute;
+    background-color: #ccc;
+    height: 10px;
+}
+
+.summaryEventContainer {
+    position: absolute;
+}
+
+.trellus-transcript-box {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-left: 10px;
+    padding: 6px 12px;
+    border-radius: 15px;
+    border: 2px solid black;
+    background-color: #EEEEF0;
+    box-shadow: 0px 0px 10px black;
+    overflow-y: scroll;
+    min-width: 450px;
+    max-width: 450px;
+    width: 450px;
+    height: 250px;
+}
+
+.transcript {
+    width: 100%;
+    align-items: flex-start;
+}
+
+.transcriptTime {
+    min-width: 30px;
+    margin-right: 5px;
+}
+
+.transcriptNameContent {
+    display: flex;
+}
+
+.transcriptName {
+    min-width: 85px;
+    width: 85px;
+    word-break: break-all;
+    margin-right: 5px;
+}
+
+.text-cover {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    bottom: 50%;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    background: white;
+    text-align: center;
+    border: 5px solid black;
+    font-weight: bold;
+}
+
+.main.disabled {
+    opacity: 0.1;
+}
+
+.trellus-transcript-box.disabled {
+    opacity: 0.1;
+}
+
+.text-cover.disabled {
+    max-width: 0;
+    max-height: 0;
+    width: 0;
+    height: 0;
+    border: none;
+}
+
+.behavioral-guidance-img {
+    width: 100px;
+    height: 100px;
+    transition: all 0.25s ease-in-out;
+}
+
+.coaching-main {
+    flex-direction: column;
+}
+
+.trellus-transcript-box.closed {
+    visibility: hidden;
+    padding: 0;
+    min-height: 0;
+    height: 0;
+    min-width: 0;
+    width: 0;
+    margin: 0
+}
+
+@keyframes progress {
+    0% { --percentage: 0; }
+    100% { --percentage: var(--value); }
+  }
+  
+@property --percentage {
+syntax: '<number>';
+inherits: true;
+initial-value: 0;
+}
+
+[role="progressbar"] {
+    --percentage: var(--value);
+    --primary: #369;
+    --secondary: #adf;
+    --size: 300px;
+    animation: progress 2s 0.5s forwards;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+[role="progressbar"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(from 0.66turn at 20% 100%, red 90deg, yellow, green 180deg);
+    mask: radial-gradient(at 50% 100%, white 55%, transparent 0);
+    mask-mode: alpha;
+    -webkit-mask: radial-gradient(at 50% 100%, #0000 55%, #000 0);
+    -webkit-mask-mode: alpha;
+    overflow: hidden;
+    border-radius: 50% / 100% 100% 0 0;
+}
+
+[role="progressbar"]::after {
+    content: "";
+    width: 60%;
+    height: 10%;
+    position: absolute;
+    bottom: -5%;
+    left: 0;
+    background: 
+        radial-gradient(circle at 83.33333% 50%, #fff 4%, #000 0 5%, #0000 0),
+        conic-gradient(at -20% 50%, #0000 88deg, #000 88.25deg 91.75deg, #0000 92deg);
+    transform-origin: 83.33333% 50%;
+    transform: rotate(calc(var(--value) * 180deg / 100))
+}
+
+.weather {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto;
+}
+
+.placeholder-text {
+    color: gray
+}
