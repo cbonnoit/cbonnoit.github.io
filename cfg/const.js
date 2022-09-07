@@ -13,6 +13,7 @@ export const HOUR_TO_SEC = HOUR_TO_MS * MS_TO_SEC;
 export const SEC_TO_HOUR = SEC_TO_MS * MS_TO_HOUR;
 export const DAY_TO_SEC = DAY_TO_MS * MS_TO_SEC;
 export const SEC_TO_DAY = SEC_TO_MS * MS_TO_DAY;
+export const MICRO_TO_SEC = 1 / 1000000
 
 // named constants for HTML
 export const CLOSED = 'closed';
