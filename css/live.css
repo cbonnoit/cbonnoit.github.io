@@ -189,23 +189,22 @@
 }
 
 .trellus-guidance-checklist-item {
-    min-width: 250px;
-    min-height: 30px;
-    width: fit-content;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
     align-items: center;
+    width: 90%;
+    margin-right: 10%;
+    padding: 3px;
 }
 
 .checklist-checkbox {
     aspect-ratio: 1;
-    width: 15px;
+    min-width: 15px;
     border-color: black;
     border-style: solid;
     border-width: thin;
     border-radius: 50%;
-    margin-right: 2px;
+    margin-right: 5px;
 }
 
 .checklist-checkbox.checked {
@@ -213,9 +212,9 @@
 }
 
 .checklist-text {
-    font-size: 15px;
     color: black;
     text-align: left;
+    word-break: break-word;
 }
 
 .checklist-text.checked {
