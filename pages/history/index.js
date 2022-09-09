@@ -1,6 +1,6 @@
 import { MICRO_TO_MS } from "../../cfg/const.js"
-import { getListConversations } from "../../lib/app/services.js"
-import { back, logInfo } from "../../lib/core.js"
+import { getListUserSessions } from "../../lib/app/services.js"
+import { back } from "../../lib/core.js"
 import { durationToString } from "../../lib/time-fns.js"
 import { createNode, deleteAllChildren } from "../../lib/user-agent.js"
 
@@ -8,8 +8,6 @@ import { createNode, deleteAllChildren } from "../../lib/user-agent.js"
 let _API_KEY = (new URLSearchParams(window.location.search)).get('apiKey')
 let _FORCE_SERVICES_HOSTNAME = (new URLSearchParams(window.location.search)).get('forceServicesName')
 let _INITILIZED = false
-
-const _LOG_SCOPE = `[Trellus][History page]`
 
 // initialize page
 listenExtensionInformation()
@@ -41,7 +39,7 @@ function listenExtensionInformation () {
  */
 async function loadHistory (maxStartMicroSec=null) {
   // get data
-  const conversations = await getListConversations(_API_KEY, maxStartMicroSec, _FORCE_SERVICES_HOSTNAME)
+  const conversations = await getListUserSessions(_API_KEY, maxStartMicroSec, _FORCE_SERVICES_HOSTNAME)
   
   // clear the table
   const table = document.querySelector('tbody')
@@ -55,7 +53,7 @@ async function loadHistory (maxStartMicroSec=null) {
   // add new rows for each conversation
   conversations.forEach((x) => {
     const hasAudio = x['start'] != null
-    const startDate = hasAudio ? new Date(x['start'] * MICRO_TO_MS) : null
+    const startDate = new Date(x['scheduled_start'] * MICRO_TO_MS)
     const duration = hasAudio ? (x['end'] - x['start']) * MICRO_TO_MS : 0
     let name = x['person_name']
     if (x['num_other_people'] > 1) name += ` + ${x['num_other_people']} others`
@@ -64,7 +62,9 @@ async function loadHistory (maxStartMicroSec=null) {
     row.appendChild(createNode('td', null, durationToString(duration)))
     row.appendChild(createNode('td', null, name))
     const detailsNode = row.appendChild(createNode('td'))
-    detailsNode.appendChild(createNode('a', {'href': `./session/${x['session_id']}${window.location.search}`}, 'See more'))
+    const searchParams = new URLSearchParams(window.location.search)
+    searchParams.append('sessionId', x['session_id'])
+    detailsNode.appendChild(createNode('a', {'href': `../session/index.html?${searchParams.toString()}`}, 'See more'))
   })
 
   // save the max start on the table

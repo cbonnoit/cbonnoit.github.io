@@ -1,0 +1,29 @@
+body {
+  background-color: #f0f0f0;
+}
+
+#transcript-container {
+  background-color: #fff;
+  width: 80%;
+  border-radius: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.transcript-item-container {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+div[data-transcript-node-id="transcript-name"] {
+  font-weight: bold;
+  font-size: small;
+}
+
+div[data-transcript-node-id="transcript-time"] {
+  font-size: small;
+}
+
+div[data-transcript-node-id="transcript-text"] {
+  font-size: small;
+}
