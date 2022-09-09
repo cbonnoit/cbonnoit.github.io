@@ -1,4 +1,3 @@
-// @ts-check
 import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
