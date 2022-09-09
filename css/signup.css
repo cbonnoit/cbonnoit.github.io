@@ -1,0 +1,110 @@
+*{
+    margin:0px;
+    padding:0px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+.main-wrap{
+    position: relative;
+    width: 100%;
+    display: flex;
+    height: 100%;
+    background-color: #5B657C;
+}
+.form-wrap{
+    border-radius: 0 11px 11px 0;
+    padding:80px 25px;
+    background-color: #03214E;
+    width:350px;
+    /* box-shadow: 0.1rem 3rem rgba(0, 0, 0, 0.527) !important; */
+}
+.form-wrap h1{
+    color: rgb(238, 237, 237);
+}
+.form-wrap h6{
+    color:rgb(212, 211, 211);
+    font-size:14px;
+    margin-bottom:20px;
+}
+.form-wrap span{
+    color:#5DD077;
+}
+.form input{
+    margin:8px 0px;
+    height:50px;
+    width:100%;
+    border:none;
+    border-radius: 20px;
+    padding-left:14px;
+    color:rgb(238, 237, 237);
+    background-color: rgb(7, 6, 10);
+}
+
+.form select {
+    margin: 8px 0px;
+    height: 50px;
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    padding-left: 14px;
+    color: rgb(238, 237, 237);
+    background-color: rgb(7, 6, 10);
+}
+
+.form input:focus{
+    border:none;
+    outline:none
+}
+.form input::placeholder{
+    padding-left: 4px;
+}
+.form .form-btn{
+    width:100px;
+    height: 50px;
+    border-radius:20px;
+    padding:5px;
+    cursor:pointer;
+    font-weight:550;
+    margin-top:16px;Welcome to Trellus.
+    background-color: transparent;
+}
+.form-btn:hover{
+    background-color: rgb(17, 16, 29);
+}
+.sign-up-with{
+    padding:40px 10px;
+    width:100%;
+    display:inline-block;
+    text-align:center;
+    color:rgb(206, 202, 202) !important;
+}
+.social-logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.social-logo a{
+    background-color: #fff;
+    width:30px;
+    height:30px;
+    margin:2px 25px;
+    padding:5px;
+    border-radius:20px;
+}
+.social-logo a img{
+    height:20px;
+    width:20px;
+}
+
+.logo-img {
+    width: 200px;
+    position: absolute;
+    bottom: 5%;
+}
+
+.welcome-text {
+    color: white;
+    margin: auto;
+    font-size: 40px;
+    font-weight: bold;
+}

@@ -1,40 +1,40 @@
 <head>
   <!-- javascript -->
   <script src="index.js", type="module"></script>
-  <link href="../../css/layout.css", rel="stylesheet">
-  <link href="../../css/components.css", rel="stylesheet">
+  <link href="../../css/signup.css", rel="stylesheet">
 </head>
 
-<body class="frame">
-  <div class="header">Sign up for Trellus</div>
-  
-  <div class="blockPrimary">
-    <div class="input">
-      <div class="inputLabel">Name</div>
-      <div class="inputField", contenteditable="true", data-field="name"></div>
-    </div>
 
-    <div class="input">
-      <div class="inputLabel">Email</div>
-      <div class="inputField", contenteditable="true", data-field="email"></div>
-    </div>
+<body>
+  <div class="main-wrap">
+      <div class="form-wrap">
+          <h1>SIGN <span>UP</span></h1>
+          <h6>Welcome to Trellus</h6>
+          <form class="form">
+              <input type="name" name="name" id="name" placeholder="Name">
+              <input type="email" name="email" id="email" placeholder="Email">
+               </br>
+               <input type="company" name="company" id="company" placeholder="Company">
+              </br>
+               <input type="password" name="pass" id="pass" placeholder="Password">
+               </br>
+              <input type="password" name="cpass" id="cpass" placeholder="Confirm Password">
+               </br>
 
-    <div class="input">
-      <div class="inputLabel">Company</div>
-      <div class="inputField", contenteditable="true", data-field="team"></div>
-    </div>
+              <select class="iname="platform" id="platform">
+                <option value="" disabled selected class="placeholder">Select your platform</option>
+                <option value="outreach">Outreach</option>
+                <option value="salesloft">Salesloft</option>
+                <option value="orum">Orum</option>
+                <option value="other">Other</option>
+              </select>
+              </br>
+              <button type="submit" class="form-btn">SIGN UP</button>
+          </form>
 
-    <div class="input">
-      <div class="inputLabel">Password</div>
-      <input class="inputField" type="password" id="password">
-    </div>
+          <img class="logo-img" src="../../images/logo-full.png" />
+      </div>
+
+      <div class="welcome-text">Welcome to Trellus. Your coaching awaits.</div>
   </div>
-
-  <div class="flexRow" style="justify-content: flex-start;">
-    <div class="button ctaPrimary", id="submit">
-      Submit
-    </div>
-  </div>
-
-  <div id="status"></div>
 </body>
