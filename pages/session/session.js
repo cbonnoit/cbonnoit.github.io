@@ -1,8 +1,7 @@
 import { MICRO_TO_MS, SEC_TO_MS } from "../../cfg/const.js"
 import { getSessionData } from "../../lib/app/services.js"
-import { back, sortByKey } from "../../lib/core.js"
+import { sortByKey } from "../../lib/core.js"
 import { durationToString } from "../../lib/time-fns.js"
-import { createNode, deleteAllChildren } from "../../lib/user-agent.js"
 
 // define constants
 let _SESSION_ID = (new URLSearchParams(window.location.search)).get('sessionId')

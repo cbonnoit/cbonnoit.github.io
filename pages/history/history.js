@@ -11,10 +11,12 @@ let _INITILIZED = false
 
 // initialize page
 listenExtensionInformation()
+listenMoreClick()
 if (_API_KEY != null && !_INITILIZED) {
   _INITILIZED = true
   loadHistory()
 }
+
 
 /**
  * Listen for extension information
@@ -32,6 +34,19 @@ function listenExtensionInformation () {
     }
   })
 }
+
+
+/**
+ * Register a listener on the more button
+ */
+function listenMoreClick () {
+  const moreButton = document.querySelector('#more-button')
+  moreButton.addEventListener('click', () => {
+    const moreMaxStart = moreButton.getAttribute('data-max-start-micro')
+    loadHistory(moreMaxStart == null ? null : parseInt(moreMaxStart))
+  })
+}
+
 
 /**
  * Return the users conversation history from maxStart
@@ -67,7 +82,7 @@ async function loadHistory (maxStartMicroSec=null) {
     detailsNode.appendChild(createNode('a', {'href': `../session/index.html?${searchParams.toString()}`}, 'See more'))
   })
 
-  // save the max start on the table
-  if (conversations.length > 0)
-      table.setAttribute('data-max-start-micro', back(conversations)['start'])
+  // save the max start on the button
+  const moreMaxStart = conversations.length > 0 ? back(conversations)['scheduled_start'] : 0
+  document.querySelector('#more-button').setAttribute('data-max-start-micro', moreMaxStart)
 }
