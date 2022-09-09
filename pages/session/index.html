@@ -1,0 +1,36 @@
+<head>
+  <script src="../../lib/components/input-list.js", type="module"></script>
+  <script src="session.js", type="module"></script>
+
+  <link href="../../css/layout.css", rel="stylesheet">
+  <link href="../../css/components.css", rel="stylesheet">
+  <link href="./session.css", rel="stylesheet">
+</head>
+
+<body>
+  <div class="header" style="margin: 20px 0 20px 0;"></div>
+
+  <div id="transcript-container"></div>
+</body>
+
+<template id="template-left">
+  <div class="transcript-item-container">
+    <div>
+      <div class="flexRowLeft" data-transcript-node-id="transcript-name-time">
+        <div data-transcript-node-id="transcript-name"></div>
+        <div data-transcript-node-id="transcript-time"></div>
+      </div>
+      <div class="flexRowLeft" data-transcript-node-id="transcript-text"></div>
+    </div>
+</template>
+
+<template id="template-right">
+  <div class="transcript-item-container" style="right: 0">
+    <div>
+      <div class="flexRowRight" data-transcript-node-id="transcript-name-time">
+        <div data-transcript-node-id="transcript-name"></div>
+        <div data-transcript-node-id="transcript-time"></div>
+      </div>
+      <div class="flexRowRight" data-transcript-node-id="transcript-text"></div>
+    </div>
+</template>
