@@ -24,40 +24,13 @@ let activePromptIntervalId = null
 let dismissObjectionIntervalId = null
 let promptPersistanceDuration = SEC_TO_MS * 5
 
-function setDefaultsAndClearUI () {
-  _partyCodeToColor = {}
-  _transcripts = []
-  partyToSummary = new Map()
-  
-  activePrompt = null
-  activePromptIntervalId = null
-  dismissObjectionIntervalId = null
-  promptPersistanceDuration = SEC_TO_MS * 5
-
-  // clear weather & news
-  //   <div class="weather" id="weather-main">
-  //   <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
-  // </div>
-  const weatherElement = document.querySelector('#weather-main')
-  weatherElement.innerHTML = ''
-  weatherElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'weather-placeholder-text'}, 'Gathering weather data...'))
-
-  // clear behavioral coaching
-  _clearBehavioralSuggestion()
-  _updateBuyingIntent(0)
-
-  // clear suggestions
-  _clearObjection()
-
-  // clear transcript and summary
-  document.querySelector('#trellus-summary').innerHTML = ''
-  document.querySelector('#transcriptRoot').innerHTML = ''
-}
+// run setup
+setup()
 
 /**
  * Main entry point to setting up javascript after page is loaded
  */
-function onPageLoad () {
+function setup () {
   logInfo(`${_LOG_SCOPE} Starting session listener`)
 
   // listen for messages posted from the extension app content script
@@ -134,6 +107,36 @@ async function _reset () {
   // reset the session and socket
   if (_session != null)
     await _endSession(_session['session_id'])
+}
+
+function setDefaultsAndClearUI () {
+  _partyCodeToColor = {}
+  _transcripts = []
+  partyToSummary = new Map()
+  
+  activePrompt = null
+  activePromptIntervalId = null
+  dismissObjectionIntervalId = null
+  promptPersistanceDuration = SEC_TO_MS * 5
+
+  // clear weather & news
+  //   <div class="weather" id="weather-main">
+  //   <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
+  // </div>
+  const weatherElement = document.querySelector('#weather-main')
+  weatherElement.innerHTML = ''
+  weatherElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'weather-placeholder-text'}, 'Gathering weather data...'))
+
+  // clear behavioral coaching
+  _clearBehavioralSuggestion()
+  _updateBuyingIntent(0)
+
+  // clear suggestions
+  _clearObjection()
+
+  // clear transcript and summary
+  document.querySelector('#trellus-summary').innerHTML = ''
+  document.querySelector('#transcriptRoot').innerHTML = ''
 }
 
 /**
@@ -473,5 +476,3 @@ function _updateBuyingIntent(data) {
   weatherElement.innerHTML = '';
   weatherElement.appendChild(parentDiv)
 }
-
-window.addEventListener("load", () => onPageLoad())
