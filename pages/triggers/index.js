@@ -1,11 +1,10 @@
+import { MESSAGE_TYPES } from "../../cfg/messages.js"
 import { getUserTriggers, saveUserTriggers } from "../../lib/app/services.js"
 import { groupByKeys } from "../../lib/core.js"
 
 // define constants
 let _TRELLUS_EXTENSION_API_KEY = null
 let _FORCE_SERVICES_HOSTNAME = null
-let _RECEIVED_EXTENSION_API_KEY = false
-let _RECEIVED_EXTENSION_ID = false
 
 // initialize page
 initialize()
@@ -28,16 +27,13 @@ function initialize () {
 function listenExtensionInformation () {
   window.addEventListener("message", (event) => {
     const messageType = event.data['type']
-    if (messageType === 'TRELLUS_EXTENSION_API_KEY') {
-      _TRELLUS_EXTENSION_API_KEY = event.data['detail']
-      _RECEIVED_EXTENSION_API_KEY = true
-    }
-    else if (messageType === 'TRELLUS_EXTENSION_ID') {
+    if (messageType ===  MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
+      _TRELLUS_EXTENSION_API_KEY = event.data['apiKey']
       _FORCE_SERVICES_HOSTNAME = event.data['forceServiceHostname']
-      _RECEIVED_EXTENSION_ID = true
-    }
-    if (_RECEIVED_EXTENSION_API_KEY && _RECEIVED_EXTENSION_ID)
       loadTriggers()
+    } else {
+      console.log(`Unknown message type ${messageType}`)
+    }
   })
 }
 

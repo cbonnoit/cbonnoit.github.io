@@ -1,5 +1,6 @@
 import { SERVICE_HOSTNAME, SIGNUP_USER_ENDPOINT, EXTENSION_ID } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
+import { logInfo } from "../../lib/core.js";
 import { simpleFetchAndCheck } from "../../lib/network.js";
 
 let _extensionId = EXTENSION_ID
@@ -15,12 +16,11 @@ function receiveMessage (event) {
     const message = event.data
     const messageType = message['type']
     // todo: remove deprecated mesage type
-    if (messageType === 'TRELLUS_EXTENSION_ID') {
-        _extensionId = message['detail']
-        _forceServicesHostname = message['forceServiceHostname']
-    } else if (messageType === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
+    if (messageType === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
         _extensionId = message['extensionId']
         _forceServicesHostname = message['forceServicesHostname']
+    } else {
+      logInfo(`Unknown message type ${messageType}`)
     }
 }
 

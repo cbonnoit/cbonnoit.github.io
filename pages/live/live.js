@@ -35,9 +35,9 @@ function setDefaultsAndClearUI () {
   promptPersistanceDuration = SEC_TO_MS * 5
 
   // clear weather & news
-//   <div class="weather" id="weather-main">
-//   <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
-// </div>
+  //   <div class="weather" id="weather-main">
+  //   <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
+  // </div>
   const weatherElement = document.querySelector('#weather-main')
   weatherElement.innerHTML = ''
   weatherElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'weather-placeholder-text'}, 'Gathering weather data...'))
@@ -78,12 +78,18 @@ function onPageLoad () {
       _endSession(_session['session_id'])
     
   })
+
+  // tell the content script that the app is loaded
+  window.postMessage({type: MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
 }
 
 function receiveMessage (event) {
   const message = event.data
   logInfo(`${_LOG_SCOPE} Receiving message type ${message['type']}`)
   switch (message['type']) {
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_CHECK_IS_LOADED:
+      window.postMessage({type: MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
+      break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING:
       _startSession(message['session'])
       break
@@ -93,6 +99,8 @@ function receiveMessage (event) {
     case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
       _extensionId = message['extensionId']
       document.querySelector('#realtimeEnabled').checked = message['realtimeEnabled']
+      break
+    case MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED:
       break
     default:
       logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
@@ -252,7 +260,7 @@ function _updateCoachingData (coaching) {
   } else if (prompt === PROMPT_TYPES.BUYING_INTENT) {
     _updateBuyingIntent(coaching['value'])
   } else {
-    console.log(`[Trellus][iframe] Unknown prompt ${prompt}`)
+    logInfo(`Unknown prompt ${prompt}`)
   }
 }
 
@@ -336,7 +344,7 @@ function _updateBehavioralSuggestion (prompt) {
   }
 
   if (!BEHAVIORAL_PROMPTS_TO_IMAGE.hasOwnProperty(prompt)) {
-    console.log(`image not created for prompt: ${prompt}`)
+    logInfo(`image not created for prompt: ${prompt}`)
     return
   }
 
@@ -361,7 +369,7 @@ function _updateBehavioralSuggestion (prompt) {
  */
 function _updateSummary (data) {
   if (partyToSummary.size === 0) {
-    console.log('[Trellus][Iframe] Sending coaching loaded to coaching UI')
+    logInfo(`Sending coaching loaded to coaching UI`)
     window.parent.postMessage({"type": "coachingLoaded"}, '*'); // only load on receiving first summary
   }
 
