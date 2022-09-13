@@ -59,17 +59,8 @@ export async function signupUser (email, name, team, password) {
     const result = await simpleFetchAndCheck(url, parameters, true)
   
     console.log('Got user signup response')
-    const callback = (response) => {
-        if (!response.success) {
-            console.log('Error in signup')
-        }
-    }
     chrome.runtime.sendMessage(_extensionId, {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
         'apiKey': result['api_key'],
-    }, callback);
-
-    // todo: remove deprecated message type
-    chrome.runtime.sendMessage(_extensionId, {type: 'API_KEY_UPDATE', apiKey: result['api_key']}, callback);
-    
+    }, console.log);
 }
