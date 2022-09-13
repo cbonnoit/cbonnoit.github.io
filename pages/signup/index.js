@@ -5,24 +5,30 @@ import { simpleFetchAndCheck } from "../../lib/network.js";
 
 let _extensionId = EXTENSION_ID
 let _forceServicesHostname = null
-
-// start listening for extension specific information
-window.addEventListener("message", receiveMessage, false)
+const _LOG_SCOPE = `[Trellus][External]`
 
 // add envent listener for click
 document.querySelector('#submit').addEventListener('click', () => signup())
 
+// start listening for extension specific information
+window.addEventListener("message", receiveMessage)
 function receiveMessage (event) {
     const message = event.data
-    const messageType = message['type']
-    // todo: remove deprecated mesage type
-    if (messageType === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
+    logInfo(`${_LOG_SCOPE} Receiving message of type ${message['type']}`)
+    switch (message['type']) {
+      case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
         _extensionId = message['extensionId']
         _forceServicesHostname = message['forceServicesHostname']
-    } else {
-      logInfo(`Unknown message type ${messageType}`)
+        break
+      case MESSAGE_TYPES.APP_TO_EXTERNAL_CHECK_IS_LOADED:
+        window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
+        break
+      default:
+        logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
+        break
     }
 }
+window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
 
 /**
  * Read signup information from the form and send the associated request
@@ -52,15 +58,15 @@ function receiveMessage (event) {
  */
 export async function signupUser (email, name, team, password) {
     // make the request
-    console.log('Forming signup user request')
+    logInfo('Forming signup user request')
     const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
     const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
     const parameters = {'email': email, 'name': name, 'team': team, 'password': password}
     const result = await simpleFetchAndCheck(url, parameters, true)
   
-    console.log('Got user signup response')
+    logInfo('Got user signup response')
     chrome.runtime.sendMessage(_extensionId, {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
         'apiKey': result['api_key'],
-    }, console.log);
+    }, logInfo);
 }

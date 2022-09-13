@@ -7,23 +7,29 @@ let _extensionId = EXTENSION_ID
 let _forceServicesHostname = null
 const _LOG_SCOPE = '[Trellus][External signin]'
 
-// start listening for extension specific information
-window.addEventListener("message", receiveMessage, false)
-
 // add envent listener for click
 document.querySelector('#submit').addEventListener('click', () => signin())
 document.querySelector('#signup').addEventListener('click', () => window.location.pathname='pages/signup')
 
+// start listening for extension specific information
+window.addEventListener("message", receiveMessage)
 function receiveMessage (event) {
     const message = event.data
-    const messageType = message['type']
-    if (messageType === MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO) {
+    logInfo(`${_LOG_SCOPE} Receiving message of type ${message['type']}`)
+    switch (message['type']) {
+      case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
         _extensionId = message['extensionId']
         _forceServicesHostname = message['forceServicesHostname']
-    } else {
-      logInfo(`${_LOG_SCOPE} Unknown message type ${message['type']}`)
+        break
+      case MESSAGE_TYPES.APP_TO_EXTERNAL_CHECK_IS_LOADED:
+        window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
+        break
+      default:
+        logInfo(`${_LOG_SCOPE} Skipping message of type ${message['type']}`)
+        break
     }
 }
+window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
 
 /**
  * Read signup information from the form and send the associated request
