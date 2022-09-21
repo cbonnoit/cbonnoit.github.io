@@ -79,7 +79,7 @@ export async function signInUser (email, password) {
       if (result == null)
         status.textContent = 'Service worker did not acknowledge'
       else if (result === true || result['success'] === true)
-        status.textContent = 'Success! You can close this page.'
+        window.location.href = '/pages/live/index.html'
       else if (result['success'] === false)
         status.textContent = 'Round trip failed'
       else
