@@ -44,17 +44,8 @@ window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
     const status = document.querySelector('#status')
     status.textContent = 'Submitted...'
   
-    // signup the user, then update the status
-    const result = await signInUser(bodyObject['email'], password)
-    
-    if (result == null)
-      status.textContent = 'Service worker did not acknowledge'
-    else if (result === true || result['success'] === true)
-      status.textContent = 'Success! You can close this page.'
-    else if (result['success'] === false)
-      status.textContent = 'Round trip failed'
-    else
-      status.textContent = 'Unknown error'
+    // signup the user
+    await signInUser(bodyObject['email'], password)
 }
   
 /**
@@ -64,7 +55,7 @@ window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
  */
 export async function signInUser (email, password) {
     // make the request
-    console.log('Forming signup user request')
+    logInfo(`${_LOG_SCOPE} Forming signup user request`)
     const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
     const url = `https://${hostname}/${SIGNIN_USER_ENDPOINT}`
     const parameters = {'email': email, 'password': password}
@@ -78,9 +69,20 @@ export async function signInUser (email, password) {
       return false
     }
   
-    console.log('Got user signup response')
-    return await chrome.runtime.sendMessage(_extensionId, {
+    logInfo(`${_LOG_SCOPE} Got user signup response`)
+    chrome.runtime.sendMessage(_extensionId, {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
         'apiKey': result['api_key'],
+    }, {}, (result) => {
+      logInfo(`${_LOG_SCOPE} Got service worker response ${result}`)
+      const status = document.querySelector('#status')
+      if (result == null)
+        status.textContent = 'Service worker did not acknowledge'
+      else if (result === true || result['success'] === true)
+        status.textContent = 'Success! You can close this page.'
+      else if (result['success'] === false)
+        status.textContent = 'Round trip failed'
+      else
+        status.textContent = 'Unknown error'
     });
 }
