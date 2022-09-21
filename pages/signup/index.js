@@ -65,7 +65,8 @@ export async function signupUser (email, name, team, password) {
       result = await simpleFetchAndCheck(url, parameters, true)
     } catch (e) {
       logInfo(`${_LOG_SCOPE} Invalid user signup response`)
-      return {'error': e.message}
+      const status = document.querySelector('#status')
+      status.textContent = 'Not authorized'
     }
   
     logInfo(`${_LOG_SCOPE} Got valid user signup response`)
@@ -73,7 +74,9 @@ export async function signupUser (email, name, team, password) {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
         'apiKey': result['api_key'], 
     }, {}, (result) => {
-      // update the status
+      // update the status. 
+      // note: it would be cleaner to await this as a promise instead of using a callback
+      //  but that seemed not to work for me
       const status = document.querySelector('#status')
       if (result == null)
         status.textContent = 'Service worker did not acknowledge'
