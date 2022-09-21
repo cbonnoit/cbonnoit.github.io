@@ -43,10 +43,20 @@ window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
     const status = document.querySelector('#status')
     status.textContent = 'Submitted...'
   
-    // signup the user, then update the status
-    await signupUser(bodyObject['email'], bodyObject['name'], bodyObject['team'], password).then(() =>
-      status.textContent = 'Success!').catch((e) =>
-      status.textContent = e)
+    // signup the user
+    const result = await signupUser(bodyObject['email'], bodyObject['name'], bodyObject['team'], password)
+    
+    // update the status
+    if (result == null)
+      status.textContent = 'Service worker did not acknowledge'
+    else if (result === true || result['success'] === true)
+      status.textContent = 'Success! You can close this page.'
+    else if (result['error'] != null)
+      status.textContent = `Error: ${result['error']}`
+    else if (result['success'] === false)
+      status.textContent = 'Round trip failed'
+    else
+      status.textContent = 'Unknown error'
 }
   
 /**
@@ -62,11 +72,17 @@ export async function signupUser (email, name, team, password) {
     const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
     const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
     const parameters = {'email': email, 'name': name, 'team': team, 'password': password}
-    const result = await simpleFetchAndCheck(url, parameters, true)
+    let result
+    try {
+      result = await simpleFetchAndCheck(url, parameters, true)
+    } catch (e) {
+      logInfo('Invalid user signup response')
+      return {'error': e.message}
+    }
   
-    logInfo('Got user signup response')
-    chrome.runtime.sendMessage(_extensionId, {
+    logInfo('Got valid user signup response')
+    return await chrome.runtime.sendMessage(_extensionId, {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
         'apiKey': result['api_key'],
-    }, logInfo);
+    });
 }

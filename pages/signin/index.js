@@ -45,9 +45,16 @@ window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
     status.textContent = 'Submitted...'
   
     // signup the user, then update the status
-    await signInUser(bodyObject['email'], password).then((result) =>
-      status.textContent = result ? 'Success!' : 'Redirecting to signup').catch((e) =>
-      status.textContent = e)
+    const result = await signInUser(bodyObject['email'], password)
+    
+    if (result == null)
+      status.textContent = 'Service worker did not acknowledge'
+    else if (result === true || result['success'] === true)
+      status.textContent = 'Success! You can close this page.'
+    else if (result['success'] === false)
+      status.textContent = 'Round trip failed'
+    else
+      status.textContent = 'Unknown error'
 }
   
 /**
@@ -72,9 +79,8 @@ export async function signInUser (email, password) {
     }
   
     console.log('Got user signup response')
-    chrome.runtime.sendMessage(_extensionId, {
+    return await chrome.runtime.sendMessage(_extensionId, {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
         'apiKey': result['api_key'],
-    }, console.log);
-    return true
+    });
 }
