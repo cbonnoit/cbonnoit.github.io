@@ -44,19 +44,7 @@ window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
     status.textContent = 'Submitted...'
   
     // signup the user
-    const result = await signupUser(bodyObject['email'], bodyObject['name'], bodyObject['team'], password)
-    
-    // update the status
-    if (result == null)
-      status.textContent = 'Service worker did not acknowledge'
-    else if (result === true || result['success'] === true)
-      status.textContent = 'Success! You can close this page.'
-    else if (result['error'] != null)
-      status.textContent = `Error: ${result['error']}`
-    else if (result['success'] === false)
-      status.textContent = 'Round trip failed'
-    else
-      status.textContent = 'Unknown error'
+    await signupUser(bodyObject['email'], bodyObject['name'], bodyObject['team'], password)
 }
   
 /**
@@ -68,7 +56,7 @@ window.postMessage({'type': MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
  */
 export async function signupUser (email, name, team, password) {
     // make the request
-    logInfo('Forming signup user request')
+    logInfo(`${_LOG_SCOPE} Forming signup user request`)
     const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
     const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
     const parameters = {'email': email, 'name': name, 'team': team, 'password': password}
@@ -76,13 +64,26 @@ export async function signupUser (email, name, team, password) {
     try {
       result = await simpleFetchAndCheck(url, parameters, true)
     } catch (e) {
-      logInfo('Invalid user signup response')
+      logInfo(`${_LOG_SCOPE} Invalid user signup response`)
       return {'error': e.message}
     }
   
-    logInfo('Got valid user signup response')
-    return await chrome.runtime.sendMessage(_extensionId, {
+    logInfo(`${_LOG_SCOPE} Got valid user signup response`)
+    chrome.runtime.sendMessage(_extensionId, {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
-        'apiKey': result['api_key'],
+        'apiKey': result['api_key'], 
+    }, {}, (result) => {
+      // update the status
+      const status = document.querySelector('#status')
+      if (result == null)
+        status.textContent = 'Service worker did not acknowledge'
+      else if (result === true || result['success'] === true)
+        status.textContent = 'Success! You can close this page.'
+      else if (result['error'] != null)
+        status.textContent = `Error: ${result['error']}`
+      else if (result['success'] === false)
+        status.textContent = 'Round trip failed'
+      else
+        status.textContent = 'Unknown error'
     });
 }
