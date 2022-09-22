@@ -9,19 +9,13 @@ export const PROMPT_TYPES = Object.freeze({
     BUYING_INTENT: 'BUYING_INTENT'
 })
 
-export const BEHAVIORAL_PROMPTS = [PROMPT_TYPES.MONOLOG, PROMPT_TYPES.NEXT_STEPS, PROMPT_TYPES.CADENCE_FAST]
+export const BEHAVIORAL_PROMPTS = [
+  PROMPT_TYPES.MONOLOG, 
+  PROMPT_TYPES.NEXT_STEPS,
+  PROMPT_TYPES.CADENCE_FAST,
+]
 
 export const BEHAVIORAL_PROMPTS_TO_IMAGE = Object.freeze({
     [PROMPT_TYPES.MONOLOG]: '/images/monologue.png',
     [PROMPT_TYPES.CADENCE_FAST]: '/images/slow_down.png'
-})
-
-export const PROMPTS_TO_ONLY_DEMO_MODE = Object.freeze({
-    SUMMARY: false,
-    MONOLOG: false,
-    NEXT_STEPS: false,
-    CADENCE_FAST: false,
-    SEQUENCE: true,
-    OBJECTION_RESPONSE: false,
-    BUYING_INTENT: false
 })
