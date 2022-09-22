@@ -1,28 +1,38 @@
+import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE, PROMPT_TYPES } from '../../cfg/coach.js';
 import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
-import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE,
-  PROMPT_TYPES } from '../../cfg/coach.js';
+
 import { logInfo, back } from "../../lib/core.js";
-import { createLoggingWebsocketPromise } from "../../lib/network.js";
 import { generateColor } from '../../lib/graphics.js'
 import { createNode, deleteAllChildren } from "../../lib/user-agent.js";
 import { durationToString } from "../../lib/time-fns.js"
+import { updateDisplay } from '../../lib/app/services.js';
 
 const _LOG_SCOPE = '[Trellus][External page]'
 
-let _session = null
-let _socketPromise = null
+// extension information
 let _extensionId = EXTENSION_ID
+let _apiKey = null
+let _forceServicesHostname = null
+
+// keep track of the current live session and related information
+let _session = null
+let _socket = null
+let _clientId = null
+
+// keep track of the current shown prompts
+let _activeBehavioralPrompt = null
+let _activeBehavioralPromptStartDate = null
+let _activeBehavioralIntervalId = null
+let _activeTriggerPrompt = null
+let _activeTriggerPromptStartDate = null
+let _activeTriggerIntervalId = null
+let _behavioralPromptPersistanceDuration = SEC_TO_MS * 5
+let _triggerPromptPersistenceDuration = SEC_TO_MS * 10
 let _partyCodeToColor = {}
 let _transcripts = []
 let partyToSummary = new Map()
-
-// keep track of the current shown behavioral prompt
-let activePrompt = null
-let activePromptIntervalId = null
-let dismissObjectionIntervalId = null
-let promptPersistanceDuration = SEC_TO_MS * 5
 
 // run setup
 setup()
@@ -48,7 +58,7 @@ function setup () {
 
     // if disabling coaching, ensure that any active session is disabled
     if (!ev.target.checked && _session != null) 
-      _endSession(_session['session_id'])
+      endSession(_session['session_id'])
     
   })
 
@@ -64,13 +74,15 @@ function receiveMessage (event) {
       window.postMessage({type: MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING:
-      _startSession(message['session'])
+      startSession(message['session'])
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_END_COACHING:
-      _endSession(message['sessionId'])
+      endSession(message['sessionId'])
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
       _extensionId = message['extensionId']
+      _apiKey = message['apiKey']
+      _forceServicesHostname = message['forceServicesHostname']
       document.querySelector('#realtimeEnabled').checked = message['realtimeEnabled']
       break
     case MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED:
@@ -84,41 +96,90 @@ function receiveMessage (event) {
  * Set the active session
  * @param {Object} session
  */
-async function _startSession (session) {
+function startSession (session) {
   logInfo(`${_LOG_SCOPE} Starting session ${session['session_id']}`)
-  await _reset()
-  _session = session
-  _socketPromise = _createClientSocket(session)
-}
+  endSession()
+  resetUI()
 
-async function _endSession (sessionId) {
-  logInfo(`${_LOG_SCOPE} Ending session ${sessionId}`)
-  // only end the session if it is the current session
-  if (_session == null || _session['session_id'] != sessionId) return
-  _session = null
-  if (_socketPromise != null) {
-    (await _socketPromise).close()
-    _socketPromise = null
+  // set session
+  _session = session
+
+  // create websocket
+  const queryString = new URLSearchParams({'session_id': session['session_id']}).toString()
+  const socketUrl = `wss://${session['realtime_hostname']}/${SUBSCRIBE_CLIENT_ENDPOINT}?${queryString}`
+  const socket = new WebSocket(socketUrl)
+  _socket = socket
+  
+  // attach handlers
+  socket.onopen = () => {
+    logInfo(`${_LOG_SCOPE} Open client socket for ${session['session_id']}`)
+  }
+  socket.onmessage = (event) => {
+    // get the data
+    const data = JSON.parse(event['data'])
+
+    // check the session is current
+    if (session['session_id'] != _session['session_id']) {
+      logInfo(`${_LOG_SCOPE} Skipping client data from stale session ${session['session_id']}`)
+      return
+    }
+
+    // display it
+    logInfo(`${_LOG_SCOPE} Receving data from client socket for ${session['session_id']}`, JSON.stringify(data))
+    _clientId = data['client_id'] ?? _clientId
+    if (data['transcript_data'] != null) 
+      updateTranscript(data['transcript_data'])
+    else if (data['coaching_data'] != null)
+      updateCoachingData(data['coaching_data']['coaching'])
+    else if (data['weather_data'] != null)
+      updateWeather(data['weather_data']['weather']) // todo: weather by party...
+  }
+  socket.onclose = () => {
+    logInfo(`${_LOG_SCOPE} Closed client socket for ${session['session_id']}`)
+    endSession(session['session_id'])
   }
 }
 
-async function _reset () {
-  setDefaultsAndClearUI()
-  // reset the session and socket
-  if (_session != null)
-    await _endSession(_session['session_id'])
+/**
+ * End the current or specified session
+ * @param {String|null} sessionId 
+ */
+function endSession (sessionId) {
+  // nothing to do if there is no active session
+  if (_session == null) return
+
+  // if a sessionId is specified and it is inconsistent it is likely stale
+  if (sessionId != null && _session['session_id'] !== sessionId) return
+
+  // end the current session
+  logInfo(`${_LOG_SCOPE} Ending session ${_session['session_id']}`)
+  _session = null
+  _clientId = null
+  if (_socket != null) {
+    _socket.close()
+    _socket = null
+  }
+
+  // reset dynamic prompts
+  resetBehavioralUI()
+  resetTriggerUI()
 }
 
-function setDefaultsAndClearUI () {
-  _partyCodeToColor = {}
-  _transcripts = []
-  partyToSummary = new Map()
-  
-  activePrompt = null
-  activePromptIntervalId = null
-  dismissObjectionIntervalId = null
-  promptPersistanceDuration = SEC_TO_MS * 5
+/**
+ * Reset all display elements on the UI
+ */
+function resetUI () {
+  resetWeatherUI()
+  updateBuyingIntentUI(0)
+  resetBehavioralUI()
+  resetTriggerUI()
+  resetTranscriptAndSummaryUI()
+}
 
+/**
+ * Reset the weather UI elements
+ */
+function resetWeatherUI() {
   // clear weather & news
   //   <div class="weather" id="weather-main">
   //   <div class="placeholder-text" id="weather-placeholder-text" >Gathering weather data...</div>
@@ -126,45 +187,71 @@ function setDefaultsAndClearUI () {
   const weatherElement = document.querySelector('#weather-main')
   weatherElement.innerHTML = ''
   weatherElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'weather-placeholder-text'}, 'Gathering weather data...'))
-
-  // clear behavioral coaching
-  _clearBehavioralSuggestion()
-  _updateBuyingIntent(0)
-
-  // clear suggestions
-  _clearObjection()
-
-  // clear transcript and summary
-  document.querySelector('#trellus-summary').innerHTML = ''
-  document.querySelector('#transcriptRoot').innerHTML = ''
 }
 
 /**
- * Create a WebSocket to receive coaching related data
- * @param {Object} session
+ * Reset the behavioral prompt UI elements
  */
-async function _createClientSocket(session) {
-  logInfo(`${_LOG_SCOPE} Creating client socket for ${session['session_id']}`)
-  const queryString = new URLSearchParams({'session_id': session['session_id']}).toString()
-  const socketUrl = `wss://${session['realtime_hostname']}/${SUBSCRIBE_CLIENT_ENDPOINT}?${queryString}`
-  const callback = (dataString) => {
-    const data = JSON.parse(dataString)
-    logInfo(`${_LOG_SCOPE} Receving data from client socket`, JSON.stringify(data))
-    if (data['transcript_data'] != null) 
-      _updateTranscript(data['transcript_data'])
-    else if (data['coaching_data'] != null)
-      _updateCoachingData(data['coaching_data']['coaching'])
-    else if (data['weather_data'] != null)
-      _updateWeather(data['weather_data']['weather']) // todo: weather by party...
-  }
-  return await createLoggingWebsocketPromise('clientSocket', socketUrl, callback, false)
+function resetBehavioralUI() {
+  // clear the ui
+  const behavioralImg = document.querySelector('#behavioral-guidance-img')
+  behavioralImg.style.opacity = '0'
+  behavioralImg.src = '/images/great_work.png'
+  behavioralImg.style.opacity = '100%'
+
+  // if there is no prompt, exit early
+  if (_activeBehavioralPrompt == null) return
+
+  // log the prompt resetting
+  if (_apiKey != null)
+    updateDisplay(_apiKey, _clientId, _activeBehavioralPrompt['prompt_id'], _activeBehavioralPrompt['prompt_type'],
+      _activeBehavioralPrompt['prompt_text'], _activeBehavioralPromptStartDate, new Date())
+  
+  // clear the prompt and interval
+  _activeBehavioralPrompt = null
+  _activeBehavioralPromptStartDate = null
+  if (_activeBehavioralIntervalId != null) clearInterval(_activeBehavioralIntervalId)
+  _activeBehavioralIntervalId = null
+}
+
+function resetTriggerUI() {
+  // clear the ui
+  document.querySelector('#objection-header').textContent = 'Suggestions'
+  document.querySelector('#objection').innerHTML = '';
+  document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-placeholder-text', class: 'placeholder-text'}, "Listening for objections..."))
+  document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-container', class: 'flexColumn'}))
+
+  // if there is no prompt, exit early
+  if (_activeTriggerPrompt == null) return
+
+  // log the prompt resetting
+  if (_apiKey != null)
+    updateDisplay(_apiKey, _clientId, _activeTriggerPrompt['prompt_id'], _activeTriggerPrompt['prompt_type'],
+      _activeTriggerPrompt['prompt_text'], _activeTriggerPromptStartDate, new Date())
+
+  // clear the prompt and interval
+  _activeTriggerPrompt = null
+  _activeTriggerPromptStartDate = null
+  if (_activeTriggerIntervalId != null) clearInterval(_activeTriggerIntervalId)
+  _activeTriggerIntervalId = null
+}
+
+/**
+ * Reset the transcript and talk time summary panels
+ */
+function resetTranscriptAndSummaryUI() {
+  _partyCodeToColor = {}
+  _transcripts = []
+  partyToSummary = new Map()
+  document.querySelector('#transcriptRoot').innerHTML = ''
+  document.querySelector('#trellus-summary').innerHTML = ''
 }
 
 /**
  * Add transript to display
  * @param {Object} transcript Transcript object to add
  */
-function _updateTranscript (transcript) {
+function updateTranscript (transcript) {
   logInfo(`${_LOG_SCOPE} Transcript from ${transcript['person_name']} (${transcript['party_code']}). Text: "${transcript['text']}"`)
   // get party code and name
   const partyCode = transcript['party_code']
@@ -184,12 +271,12 @@ function _updateTranscript (transcript) {
 
   // if this party is also the party of the last transcript, then append the text
   if ((back(_transcripts) ?? {})['partyCode'] === partyCode)
-    _extendLastTranscript(text)
+    extendLastTranscript(text)
   else {
     // get the start time (relative to audio zero)
     const startTimeMs = transcript['start_time'] * SEC_TO_MS
     // create a new transcript
-    _addNewTranscript(text, partyCode, transcript['person_name'], startTimeMs)
+    addNewTranscript(text, partyCode, transcript['person_name'], startTimeMs)
   }
 
   // keep scroll at bottom. note: if this is done immediately, layout may not be complete
@@ -200,7 +287,7 @@ function _updateTranscript (transcript) {
  * Extend the last transcript with additional words
  * @param {String} text Text to extend transcript with
  */
-function _extendLastTranscript (text) {
+function extendLastTranscript (text) {
   const transcript = back(_transcripts)
   transcript.contentNode.textContent += ' ' + text
 }
@@ -212,7 +299,7 @@ function _extendLastTranscript (text) {
  * @param {String} partyName
  * @param {Number} startTime Start time (in milliseconds)
  */
-function _addNewTranscript (text, partyCode, partyName, startTime) {
+function addNewTranscript (text, partyCode, partyName, startTime) {
   const root = document.querySelector('#transcriptRoot')
   // create nodes
 
@@ -229,7 +316,6 @@ function _addNewTranscript (text, partyCode, partyName, startTime) {
     contentStyle = 'margin-right: 20%'
   }
 
-  
   transcriptHeader.appendChild(createNode('div', {'class': 'flexColumn transcriptTime'}, durationToString(startTime)))
   const nameAttributes = {'class': 'transcriptName', 'style': `color: ${_partyCodeToColor[partyCode]};`}
   transcriptHeader.appendChild(createNode('div', nameAttributes, partyName))
@@ -244,55 +330,50 @@ function _addNewTranscript (text, partyCode, partyName, startTime) {
  * Update coaching based on input
  * @param {object} prompt
  */
-function _updateCoachingData (prompt) {
+function updateCoachingData (prompt) {
   // per-prompt rendering
   const promptType = prompt['prompt_type'].toUpperCase()
   if (promptType === PROMPT_TYPES.SUMMARY_V2) {
-    _updateSummary(prompt['value'])
+    updateSummary(prompt['value'])
   } else if (promptType === PROMPT_TYPES.TRIGGER) {
-    _updateTrigger(prompt['value']['trigger_name'], prompt['value']['trigger_prompt'])
+    updateTriggerUI(prompt)
   }else if (BEHAVIORAL_PROMPTS.includes(promptType)) {
-    _updateBehavioralSuggestion(promptType)
+    updateBehavioralSuggestionUI(prompt)
   } else if (promptType === PROMPT_TYPES.BUYING_INTENT) {
-    _updateBuyingIntent(prompt['value'])
+    updateBuyingIntentUI(prompt['value'])
   } else {
     logInfo(`Unknown prompt ${promptType}`)
   }
 }
 
-function _clearObjection() {
-  document.querySelector('#objection-header').textContent = 'Suggestions'
-  document.querySelector('#objection').innerHTML = '';
-  document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-placeholder-text', class: 'placeholder-text'}, "Listening for objections..."))
-  document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-container', class: 'flexColumn'}))
-}
-
 /**
  * Updates objection data with new data
- * @param {string} triggerName trigger name
- * @param {string} triggerPrompt trigger prompt
+ * @param {object} prompt
  */
-function _updateTrigger (triggerName, triggerPrompt) {
-  // cancel any existing objection callback
-  if (dismissObjectionIntervalId != null)
-    clearInterval(dismissObjectionIntervalId)
+function updateTriggerUI (prompt) {
+  // reset the ui
+  resetTriggerUI()
 
-  // set objection text
+  // set trigger text
   const placeholderText = document.querySelector('#objection-placeholder-text')
   if (placeholderText) placeholderText.remove()
-
+  const triggerName = prompt['value']['trigger_name']
+  const triggerResponse = prompt['value']['trigger_prompt']
   document.querySelector('#objection-header').textContent = `Objection: ${triggerName.toLowerCase()}`
   const objectionContainer = document.querySelector('#objection-container')
   deleteAllChildren(objectionContainer)
-  const responses = Array.isArray(triggerPrompt) ? triggerPrompt : triggerPrompt.split('\n')
-  for (const response of responses) {
-    objectionContainer.appendChild(_createCheckListElement(response, false))
-  }
+  const responses = Array.isArray(triggerResponse) ? triggerResponse : triggerResponse.split('\n')
+  for (const response of responses)
+    objectionContainer.appendChild(createCheckListElement(response, false))
 
-  // add a callback dismissing the objection
-  dismissObjectionIntervalId = setTimeout(() => {
-    _clearObjection()
-  }, promptPersistanceDuration * 2)
+  // store references to this as the active trigger
+  _activeTriggerPrompt = prompt
+  _activeTriggerPromptStartDate = new Date()
+  _activeTriggerIntervalId = setTimeout(() => resetTriggerUI(), _triggerPromptPersistenceDuration)
+ 
+  // post to the update-display endpoint
+  updateDisplay(_apiKey, _clientId, prompt['prompt_id'], prompt['prompt_type'],
+    prompt['prompt_text'], _activeTriggerPromptStartDate, null)
 }
 
 /**
@@ -301,7 +382,7 @@ function _updateTrigger (triggerName, triggerPrompt) {
  * @param checked whether the element should already be checked
  * @returns {HTMLDivElement}
  */
-function _createCheckListElement(labelText, checked) {
+function createCheckListElement(labelText, checked) {
   const checklistItem = createNode('div', {'class': 'trellus-guidance-checklist-item'})
   const checkbox = createNode('div', {'class': 'checklist-checkbox'})
   const checklistItemText = createNode('div', {'class': 'checklist-text'}, labelText)
@@ -316,54 +397,55 @@ function _createCheckListElement(labelText, checked) {
   return checklistItem;
 }
 
-function _clearBehavioralSuggestion() {
-  // show the prompt
-  const behavioralImg = document.querySelector('#behavioral-guidance-img')
-  behavioralImg.style.opacity = '0'
-  behavioralImg.src = '/images/great_work.png'
-  behavioralImg.style.opacity = '100%'
-}
-
 /**
  * Updates the behavioral suggestion with a new prompt
- * @param {String} prompt
+ * @param {Objection} prompt
  */
-function _updateBehavioralSuggestion (prompt) {
-  // if there is an active prompt and the new prompt is different, ignore the new prompt
-  // the assumption here is that prompts will get refreshed as long as they are valid for
-  // and the font end should avoid flickering between multiple simultaneously valid prompts
-  if (activePrompt != null && activePrompt !== prompt) return;
+function updateBehavioralSuggestionUI (prompt) {
+  // handle case where there already is an active prompt
+  const promptType = prompt['prompt_type']
+  if (_activeBehavioralPrompt != null) {
+    // if there is an active prompt and the new prompt is different, ignore the new prompt
+    // the assumption here is that prompts will get refreshed as long as they are valid for
+    // and the font end should avoid flickering between multiple simultaneously valid prompts
+    if (_activeBehavioralPrompt['prompt_type'] !== promptType) return;
 
-  // clear any pending interruptions
-  if (activePromptIntervalId != null) {
-    clearInterval(activePromptIntervalId);
-  }
-
-  if (!BEHAVIORAL_PROMPTS_TO_IMAGE.hasOwnProperty(prompt)) {
-    logInfo(`image not created for prompt: ${prompt}`)
+    // if the are the same, just extend the timeout interval
+    // note: this also avoids spamming the update display endpoint
+    clearInterval(_activeBehavioralIntervalId)
+    _activeBehavioralIntervalId = setTimeout(() => resetBehavioralUI(), _behavioralPromptPersistanceDuration)
     return
   }
 
+  // clear current ui
+  resetBehavioralUI()
+
+  // only show known images
+  if (!BEHAVIORAL_PROMPTS_TO_IMAGE.hasOwnProperty(promptType)) {
+    logInfo(`image not created for prompt: ${promptType}`)
+    return
+  }
+
+  // set the image
   const behavioralImg = document.querySelector('#behavioral-guidance-img')
-  behavioralImg.style.opacity = '0'
-  behavioralImg.src = BEHAVIORAL_PROMPTS_TO_IMAGE[prompt]
+  behavioralImg.src = BEHAVIORAL_PROMPTS_TO_IMAGE[promptType]
   behavioralImg.style.opacity = '100%'
 
-  activePrompt = prompt;
+  // update active prompt
+  _activeBehavioralPrompt = prompt;
+  _activeBehavioralPromptStartDate = new Date()
+  _activeBehavioralIntervalId = setTimeout(() => resetBehavioralUI(), _behavioralPromptPersistanceDuration)
 
-  // automatically hide the prompt
-  activePromptIntervalId = setTimeout(() => {
-    _clearBehavioralSuggestion()
-    activePrompt = null;
-    activePromptIntervalId = null;
-  }, promptPersistanceDuration)
+  // post to the update-display endpoint
+  updateDisplay(_apiKey, _clientId, prompt['prompt_id'], prompt['prompt_type'],
+    prompt['prompt_text'], _activeBehavioralPromptStartDate, null)
 }
 
 /**
  * Update the summary
  * @param {Array.<Object>} data Summary data
  */
-function _updateSummary (data) {
+function updateSummary (data) {
   if (partyToSummary.size === 0) {
     logInfo(`Sending coaching loaded to coaching UI`)
     window.parent.postMessage({"type": "coachingLoaded"}, '*'); // only load on receiving first summary
@@ -377,7 +459,7 @@ function _updateSummary (data) {
   })
 
   for (const partyData of data)
-    _updateActiveIntervals(partyData['party_code'], partyData['party_name'], partyData['intervals'], totalTalkTime)
+    updateActiveIntervals(partyData['party_code'], partyData['party_name'], partyData['intervals'], totalTalkTime)
 }
 
 /**
@@ -386,10 +468,10 @@ function _updateSummary (data) {
  * @param {String} partyName Party name to display with intervals
  * @param {Array.<Object>} intervals intervals in the form {start, end}
  */
-function _updateActiveIntervals (partyCode, partyName, intervals, totalTalkTime) {
+function updateActiveIntervals (partyCode, partyName, intervals, totalTalkTime) {
   // create the party summary
   if (!partyToSummary.has(partyCode))
-    _createPartySummary(partyCode, partyName)
+    createPartySummary(partyCode, partyName)
 
   // update party names. note there can be a race condition in the coaching run loop between receipt of
   // audio data and party person data, so it is possible to get a transitive `Unknown` name
@@ -422,7 +504,7 @@ function _updateActiveIntervals (partyCode, partyName, intervals, totalTalkTime)
  * @param {Number} partyCode Party identifier to update intervals for
  * @param {String} partyName Party name to display with intervals
  */
-function _createPartySummary (partyCode, partyName) {
+function createPartySummary (partyCode, partyName) {
   // create layout
   const root = document.querySelector('#trellus-summary')
   const summary = root.appendChild(createNode('div', {'class': 'flexRow full summary'}))
@@ -436,7 +518,7 @@ function _createPartySummary (partyCode, partyName) {
   partyToSummary.set(partyCode, payloadContainer)
 }
 
-function _updateBuyingIntent(data) {
+function updateBuyingIntentUI(data) {
   const buyingSignalMeter = document.querySelector('#buyingSignal')
   const percentageSignal = parseFloat(data)*100
   buyingSignalMeter.setAttribute('aria-valuenow', `${percentageSignal}`)
@@ -448,7 +530,7 @@ function _updateBuyingIntent(data) {
  * Update weatheer based on input
  * @param {object} weather
  */
- function _updateWeather (weather) { 
+ function updateWeather (weather) { 
   const weatherElement = document.querySelector('#weather-main')
 
   const parentDiv = createNode('div', {'style': 'flex-direction: column; display: flex'})
