@@ -153,7 +153,7 @@ async function _createClientSocket(session) {
     if (data['transcript_data'] != null) 
       _updateTranscript(data['transcript_data'])
     else if (data['coaching_data'] != null)
-      _updateCoachingData(data['coaching_data'])
+      _updateCoachingData(data['coaching_data']['coaching'])
     else if (data['weather_data'] != null)
       _updateWeather(data['weather_data']['weather']) // todo: weather by party...
   }
@@ -242,27 +242,19 @@ function _addNewTranscript (text, partyCode, partyName, startTime) {
 
 /**
  * Update coaching based on input
- * @param {object} coaching
+ * @param {object} prompt
  */
-function _updateCoachingData (coaching) { 
-  // starting with 9ce9a73b6d the backend started sending coaching data through the 'coaching' parameter
-  if (coaching.hasOwnProperty('coaching'))
-    coaching = coaching['coaching']
-  
-  // note: in 6eaaff1 and prior, types came in as 'prompt'. after that they were 'prompt_type'
-  const promptType = (coaching['prompt_type'] ?? coaching['prompt']).toUpperCase()
-
+function _updateCoachingData (prompt) {
   // per-prompt rendering
+  const promptType = prompt['prompt_type'].toUpperCase()
   if (promptType === PROMPT_TYPES.SUMMARY_V2) {
-    _updateSummary(coaching['value'])
-  } else if (promptType === PROMPT_TYPES.OBJECTION_RESPONSE) {
-    _updateTrigger(coaching['value']['objection'], coaching['value']['response'])
+    _updateSummary(prompt['value'])
   } else if (promptType === PROMPT_TYPES.TRIGGER) {
-    _updateTrigger(coaching['value']['trigger_name'], coaching['value']['trigger_prompt'])
+    _updateTrigger(prompt['value']['trigger_name'], prompt['value']['trigger_prompt'])
   }else if (BEHAVIORAL_PROMPTS.includes(promptType)) {
     _updateBehavioralSuggestion(promptType)
   } else if (promptType === PROMPT_TYPES.BUYING_INTENT) {
-    _updateBuyingIntent(coaching['value'])
+    _updateBuyingIntent(prompt['value'])
   } else {
     logInfo(`Unknown prompt ${promptType}`)
   }
