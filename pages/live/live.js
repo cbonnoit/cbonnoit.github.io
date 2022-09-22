@@ -249,21 +249,22 @@ function _updateCoachingData (coaching) {
   if (coaching.hasOwnProperty('coaching'))
     coaching = coaching['coaching']
   
-  const prompt = coaching['prompt'].toUpperCase()
+  // note: in 6eaaff1 and prior, types came in as 'prompt'. after that they were 'prompt_type'
+  const promptType = (coaching['prompt_type'] ?? coaching['prompt']).toUpperCase()
 
   // per-prompt rendering
-  if (prompt === PROMPT_TYPES.SUMMARY_V2) {
+  if (promptType === PROMPT_TYPES.SUMMARY_V2) {
     _updateSummary(coaching['value'])
-  } else if (prompt === PROMPT_TYPES.OBJECTION_RESPONSE) {
+  } else if (promptType === PROMPT_TYPES.OBJECTION_RESPONSE) {
     _updateTrigger(coaching['value']['objection'], coaching['value']['response'])
-  } else if (prompt === PROMPT_TYPES.TRIGGER) {
+  } else if (promptType === PROMPT_TYPES.TRIGGER) {
     _updateTrigger(coaching['value']['trigger_name'], coaching['value']['trigger_prompt'])
-  }else if (BEHAVIORAL_PROMPTS.includes(prompt)) {
-    _updateBehavioralSuggestion(prompt)
-  } else if (prompt === PROMPT_TYPES.BUYING_INTENT) {
+  }else if (BEHAVIORAL_PROMPTS.includes(promptType)) {
+    _updateBehavioralSuggestion(promptType)
+  } else if (promptType === PROMPT_TYPES.BUYING_INTENT) {
     _updateBuyingIntent(coaching['value'])
   } else {
-    logInfo(`Unknown prompt ${prompt}`)
+    logInfo(`Unknown prompt ${promptType}`)
   }
 }
 
