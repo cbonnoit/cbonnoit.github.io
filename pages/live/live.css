@@ -48,10 +48,16 @@
   flex-direction: column;
 }
 
-#transcript-box-wrapper {
-  height: 100%
+#transcript-box-wrapper-outer {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
 }
 
+#transcript-box-wrapper-inner {
+  height: 100%;
+}
 
 .trellus-recording-header {
     display: flex;
