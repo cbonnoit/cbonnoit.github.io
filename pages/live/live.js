@@ -154,7 +154,6 @@ function endSession (sessionId) {
   // end the current session
   logInfo(`${_LOG_SCOPE} Ending session ${_session['session_id']}`)
   _session = null
-  _clientId = null
   if (_socket != null) {
     _socket.close()
     _socket = null
@@ -163,6 +162,7 @@ function endSession (sessionId) {
   // reset dynamic prompts
   resetBehavioralUI()
   resetTriggerUI()
+  _clientId = null
 }
 
 /**
