@@ -26,6 +26,7 @@
 }
 
 .panel-body {
+    flex-grow: 1;
     padding: 6px 12px;
     min-width: 250px;
 }
@@ -33,6 +34,24 @@
 .panel-body > * {
     font-size: 13px;
 }
+
+#transcript-panel {
+  flex-grow: 1;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+#transcript-panel-inner {
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+#transcript-box-wrapper {
+  height: 100%
+}
+
 
 .trellus-recording-header {
     display: flex;
@@ -289,9 +308,7 @@
 .trellus-transcript-box {
     width: 100%;
     overflow-y: scroll;
-    min-height: 250px;
-    max-height: 250px;;
-    height: 250px;
+    height: calc(100% - 10px);
 }
 
 .transcript {
@@ -353,6 +370,8 @@
 }
 
 .coaching-main {
+    height: calc(100% - 10px);
+    display: flex;
     flex-direction: column;
 }
 
@@ -454,9 +473,9 @@ initial-value: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-radius: 15px;
+    border-radius: 15px 15px 0 0;
     background-color: #5B657C;
-    height: calc(100vh - 20px);
+    height: calc(100vh - 95px);
 }
 
 .coaching-main {
