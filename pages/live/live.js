@@ -20,6 +20,7 @@ let _forceServicesHostname = null
 let _session = null
 let _socket = null
 let _clientId = null
+let _call_active = false
 
 // keep track of the current shown prompts
 let _activeBehavioralPrompt = null
@@ -48,12 +49,25 @@ function setup () {
   // add responsivity to buttons
   document.querySelector('#realtimeEnabled').addEventListener('click', (ev) => {
     // send the extension a message that realtime coaching is disabled
+    
+    // TODO: remove at some point, need to do this for backwards compatibility since some extensions may still anticipate this message for now...
     chrome.runtime.sendMessage(_extensionId, {
       'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_REALTIME_ENABLED,
-      'realtimeIsEnabled': ev.target.checked
+      'realtimeIsEnabled': ev.target.checked, 
     })
 
-    const updateText = ev.target.checked ? 'Coaching Enabled' : 'Coaching Disabled'
+    chrome.runtime.sendMessage(_extensionId, {
+      'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_NEXT_OR_CURRENT_CALL_IS_DISABLED,
+      'nextOrCurrentCallIsEnabled': ev.target.checked
+    })
+
+    let updateText
+    if (ev.target.checked)
+      updateText = 'Coaching Enabled'
+    else if (_call_active) 
+      updateText = 'Current Call Disabled'
+    else
+      updateText = 'Next Call Disabled'
     document.querySelector('#realtimeEnabledText').textContent =  updateText
 
     // if disabling coaching, ensure that any active session is disabled
@@ -73,10 +87,20 @@ function receiveMessage (event) {
     case MESSAGE_TYPES.APP_TO_EXTERNAL_CHECK_IS_LOADED:
       window.postMessage({type: MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
       break
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_START_CALL:
+      _call_active = true
+      if (!document.querySelector('#realtimeEnabled').checked)
+        document.querySelector('#realtimeEnabledText').textContent =  'Current Call Disabled'
+      break
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_END_CALL:
+      _call_active = false
+      document.querySelector('#realtimeEnabled').checked = true
+      document.querySelector('#realtimeEnabledText').textContent =  'Coaching Enabled'
+      break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING:
       startSession(message['session'])
       break
-    case MESSAGE_TYPES.APP_TO_EXTERNAL_END_COACHING:
+    case MESSAGE_TYPES.APP_TO_EXTERNAL_END_COACHING: // TODO: backwards compatibility, remove at some point
       endSession(message['sessionId'])
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
