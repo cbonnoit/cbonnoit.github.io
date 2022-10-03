@@ -86,14 +86,28 @@
         </div>
 
         <div class="footer" id="footer">
-            <label class="switch" id="switch">
-                <input type="checkbox" checked id="realtimeEnabled">
-                <span class="slider round"></span>
-                <div class='compliance-text'>Make sure to follow all state/local call recording laws and inform participants where required.</div>
-            </label>
-            <div class="enabledText" id="realtimeEnabledText">
-                Coaching Enabled
+            <div class="footer-arrangement">
+            <div class="switch-div">
+                <label class="switch" id="switch">
+                    <input type="checkbox" checked id="realtimeEnabled">
+                    <span class="slider round"></span>
+                    <div class='compliance-text'>Make sure to follow all state/local call recording laws and inform participants where required.</div>
+                </label>
+                <div class="enabledText" id="realtimeEnabledText">
+                    Coaching Enabled
+                </div>
             </div>
+
+            <button class='copy-button' type="button" id="copyButton">
+                <div style="display: flex; flex-direction: row;">
+                    <div style="width:10px; height:10px; margin-right: 5px;">
+                        <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 1C2.34315 1 1 2.34315 1 4V15V16H2H6.33333V14H3V4C3 3.44772 3.44772 3 4 3H14V6.33333H16V2V1H15H4ZM9 8H8V9V22V23H9H20C21.6569 23 23 21.6569 23 20V9V8H22H9ZM10 21V10H21V20C21 20.5523 20.5523 21 20 21H10Z" fill="currentColor"></path></svg>
+                    </div>
+                    <div id="copyText">trellus.ai/install</div>
+                </div>
+                <div class='share-text' id="shareText">Click to copy</div>
+        </button>
+    </div>
         </div>
     </div>
 </body>
