@@ -80,7 +80,6 @@ function setup () {
   window.postMessage({type: MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED})
 
   document.querySelector('#copyButton').addEventListener("mouseover", () => {
-    console.log('right here')
     document.querySelector('#shareText').textContent = 'Click to copy'
   })
 
