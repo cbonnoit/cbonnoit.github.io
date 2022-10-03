@@ -467,11 +467,11 @@ initial-value: 0;
 }
 
 .enabledText {
-    min-width: 160px;
-    max-width: 160px;
-    width: 160px;
-    margin-left: 10px;
     color: white;
+    font-size: 14px;
+    text-align: center;
+    width: 75px;
+    margin-left: 5px;
 }
 
 
@@ -492,12 +492,17 @@ initial-value: 0;
     background-color: black;
 }
 
+.switch-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 40px;
+    height: 25px;
   }
   
 .switch input { 
@@ -521,10 +526,10 @@ initial-value: 0;
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    height: 19px;
+    width: 18px;
+    left: 2px;
+    bottom: 3px;
     background-color: black;
     background-image: url(../images/logo.png);
     background-repeat: no-repeat;
@@ -544,9 +549,9 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
 
 }
 
@@ -572,7 +577,7 @@ border-radius: 50%;
 
   /* Position the tooltip */
   position: absolute;
-  left: 60px;
+  left: 40px;
   bottom: 20px;
 
   z-index: 9999999;
@@ -589,4 +594,41 @@ border-radius: 50%;
 .switch:hover .compliance-text {
     cursor: pointer;
     visibility: visible;
+}
+
+.copy-button:hover {
+    cursor: pointer;
+    color: #5DD077;
+}
+
+.share-text {
+    visibility: hidden;
+    width: 100px;
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    font-size: 10px;
+    opacity: 1;
+  
+    /* Position the tooltip */
+    position: absolute;
+    right: 25px;
+    bottom: 15px;
+  
+    z-index: 9999999;
+  }
+
+.copy-button:hover .share-text {
+    visibility: visible;
+}
+
+.footer-arrangement {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
 }
