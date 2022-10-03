@@ -468,7 +468,7 @@ initial-value: 0;
 
 .enabledText {
     color: white;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
     width: 75px;
     margin-left: 5px;
@@ -599,6 +599,10 @@ border-radius: 50%;
 .copy-button:hover {
     cursor: pointer;
     color: #5DD077;
+}
+
+.copy-text {
+    font-size: 10px;
 }
 
 .share-text {
