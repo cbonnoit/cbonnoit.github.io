@@ -60,6 +60,7 @@
 }
 
 .trellus-recording-header {
+    align-items: center;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -635,4 +636,17 @@ border-radius: 50%;
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
+}
+
+.header-click-text {
+    cursor: pointer;
+    font-size: 12px;
+    color: #5DD077;
+    font-style: italic;
+    opacity: 0.5;
+    text-decoration:none;
+}
+
+.header-click-text:hover {
+    opacity: 1;
 }
