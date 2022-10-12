@@ -250,6 +250,7 @@ function resetBehavioralUI() {
 function resetTriggerUI() {
   // clear the ui
   document.querySelector('#objection-header').textContent = 'Suggestions'
+  document.querySelector('#customize-link').style.display = "block"
   document.querySelector('#objection').innerHTML = '';
   document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-placeholder-text', class: 'placeholder-text'}, "Listening for objections..."))
   document.querySelector('#objection').appendChild(createNode('div', {id: 'objection-container', class: 'flexColumn'}))
@@ -392,6 +393,7 @@ function updateTriggerUI (prompt) {
   if (placeholderText) placeholderText.remove()
   const triggerName = prompt['value']['trigger_name']
   const triggerResponse = prompt['value']['trigger_prompt']
+  document.querySelector('#customize-link').style.display = "none"
   document.querySelector('#objection-header').textContent = `Objection: ${triggerName.toLowerCase()}`
   const objectionContainer = document.querySelector('#objection-container')
   deleteAllChildren(objectionContainer)
