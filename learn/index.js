@@ -23,5 +23,5 @@ if ("maxTouchPoints" in navigator) {
 
 if (hasTouchScreen)
     // similar behavior as clicking on a link
-    window.location.href = "https://trellus.ai/";
+    window.location.href = "https://app.trellus.ai/install";
 
