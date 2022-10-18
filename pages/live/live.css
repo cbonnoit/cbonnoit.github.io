@@ -532,11 +532,6 @@ initial-value: 0;
     left: 2px;
     bottom: 3px;
     background-color: black;
-    background-image: url(../images/logo.png);
-    background-repeat: no-repeat;
-    background-size: 20px;
-    background-origin: content-box;
-    background-position: center;
     -webkit-transition: .4s;
     transition: .4s;
 }
