@@ -562,21 +562,7 @@ function updateBuyingIntentUI(data) {
 
 
 /**
- * Render a short time string of current time with specified UTC offset
- * @param {number} offsetSeconds seconds east of UTC
- */
- function renderLocalTime (offsetSeconds) {
-  const now = new Date()
-  // Date.getTimezoneOffset returns minutes west of UTC
-  // but I didn't read the docs carefully so this might go very badly near DST changes
-  const offsetFromHere = offsetSeconds + now.getTimezoneOffset() * 60
-  const offsetTime = new Date(now.getTime() + offsetFromHere * 1000)
-  return offsetTime.toLocaleTimeString([], {timeStyle: "short"})
-}
-
-
-/**
- * Update weather based on input
+ * Update weatheer based on input
  * @param {object} weather
  */
  function updateWeather (weather) { 
@@ -590,17 +576,9 @@ function updateBuyingIntentUI(data) {
   upperDiv.appendChild(weatherValue)
   upperDiv.appendChild(weatherImg)
 
-  const bottomDiv = createNode('div', {'style': 'margin-top: 4px; color: #423838;'})
-  const weatherLocation = createNode('span', {}, " in " + weather['location_str'])
-  const prospectLocalTime = createNode('span', {}, renderLocalTime(weather['utcoffset']))
-  bottomDiv.appendChild(prospectLocalTime)
+  const bottomDiv = createNode('div')
+  const weatherLocation = createNode('div', {'style': 'margin-top: 4px; color: #423838;'}, weather['location_str'])
   bottomDiv.appendChild(weatherLocation)
-  setTimeout(function updateLocalTime() {
-    if (weatherElement.contains(prospectLocalTime)) {
-      prospectLocalTime.textContent = renderLocalTime(weather['utcoffset']);
-      setTimeout(updateLocalTime, 60 - Math.min(59, (new Date()).getSeconds()))
-    }
-  }, 1)
 
   parentDiv.appendChild(upperDiv)
   parentDiv.appendChild(bottomDiv)
