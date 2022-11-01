@@ -1,0 +1,54 @@
+<head>
+  <!-- javascript -->
+  <script src="index.js", type="module"></script>
+  <script src="../../lib/jwt-decode.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link href="../../css/layout.css", rel="stylesheet">
+  <link href="../../css/components.css", rel="stylesheet">
+</head>
+
+<body>
+<div style="display: flex; height: 100%; background-color: #5B657C;">
+  <div style="display: flex; flex-direction: column; justify-content: center; height: 50%; margin: auto; width: 50%; align-items: center; background-color: #03214E">
+      <div style="display: flex; justify-content: center; align-items: center;">  
+        <div id="g_id_onload"
+            data-client_id="50226627522-ekkero1qdgs8glk3t809ice0ld8h4i2n.apps.googleusercontent.com"
+            data-callback="handleGoogleCredentialResponse"
+            data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
+        </div>
+    </div>
+
+    <div style="color: lightgrey; margin: 10px">
+      or
+    </div>
+
+    <div id ="form" style="display: flex; flex-direction: column; width: 50%">
+
+      <input style="font-size: medium;" placeholder="Email" class="inputField", contenteditable="true", data-field="email">
+      <input style="font-size: medium; margin-top: 10px;" placeholder="Password" class="inputField" type="password" id="password">
+  
+      <div class="button ctaPrimary" style="margin-top: 10px;" id="submit">
+        Sign in
+      </div>
+  
+    </div>
+
+
+    <div style="margin-top: 20px; color: white;">
+      <span id="sign-in-type-text">No account?</span> <span id="sign-in-type-button" style="text-decoration: none; color: purple; font-weight: bold; cursor: pointer;">Create one</span>
+    </div>
+
+
+    <div id="status"></div>
+  </div>
+</div>
+
+</body>
