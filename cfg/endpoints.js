@@ -15,3 +15,7 @@ export const GET_SESSION_DATA_ENDPOINT = 'get-session-data'
 
 // extension ID
 export const EXTENSION_ID = "enhpjjojmnlnaokmppkkifgaonfojigl"
+
+// login type
+export const PASSWORD_LOGIN = 'PASSWORD_LOGIN'
+export const GOOGLE_LOGIN = 'GOOGLE_LOGIN'

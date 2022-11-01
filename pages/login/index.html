@@ -1,0 +1,45 @@
+<head>
+  <!-- javascript -->
+  <script src="index.js", type="module"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link href="../../css/layout.css", rel="stylesheet">
+  <link href="../../css/components.css", rel="stylesheet">
+</head>
+
+<body>
+<div style="display: flex; height: 100%; background-color: #5B657C;">
+  <div style="display: flex; flex-direction: column; justify-content: center; height: 50%; margin: auto; max-width: 100%; min-width: 50%; width: 800px; align-items: center; background-color: #03214E; border-radius: 10%;">
+      <img src='../../images/trellus_logo.svg' style="min-width: 125px; width: 10%; position: absolute; top: 28%;"/>
+      <div style="display: flex; justify-content: center; align-items: center;">  
+        <div id="g_id_onload"
+            data-client_id="50226627522-ekkero1qdgs8glk3t809ice0ld8h4i2n.apps.googleusercontent.com"
+            data-callback="handleGoogleCredentialResponse"
+            data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
+        </div>
+    </div>
+
+    <div style="color: lightgrey; margin: 10px">
+      or
+    </div>
+
+    <div id ="form" style="display: flex; flex-direction: column; width: 50%">
+    </div>
+
+
+    <div style="margin-top: 20px; color: white;">
+      <span id="sign-in-type-text">No account?</span> <span id="sign-in-type-button" style="text-decoration: none; color: purple; font-weight: bold; cursor: pointer;">Create one</span>
+    </div>
+
+    <div id="banner-box" style="display: none; width: 40%; max-width: 350px; background-color: red; height: 30px; margin-top: 10px; color: white; text-align: center; justify-content: center; align-items: center;">Error</div>
+  </div>
+</div>
+
+</body>
