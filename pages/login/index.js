@@ -199,7 +199,7 @@ window.handleGoogleCredentialResponse =  async function handleGoogleCredentialRe
   logInfo(`${_LOG_SCOPE} Forming signup user request`)
   const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
   const url = `https://${hostname}/${SIGNUP_USER_ENDPOINT}`
-  const parameters = {'type': GOOGLE_LOGIN, 'credential': response['credential']}
+  const parameters = {'type': GOOGLE_LOGIN, 'google_credential': response['credential']}
   let result
   try {
     result = await simpleFetchAndCheck(url, parameters, true)
