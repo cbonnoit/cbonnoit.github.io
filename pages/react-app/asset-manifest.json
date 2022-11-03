@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/pages/react-app/static/css/main.33a4f0d4.css",
-    "main.js": "/pages/react-app/static/js/main.8b13c095.js",
+    "main.css": "/pages/react-app/static/css/main.445fc12f.css",
+    "main.js": "/pages/react-app/static/js/main.31c63b85.js",
     "index.html": "/pages/react-app/index.html",
     "static/media/stop-outline.svg": "/pages/react-app/static/media/stop-outline.5b20ccb56f50bcf3d216a8edc751ac25.svg",
     "static/media/slow-outline.svg": "/pages/react-app/static/media/slow-outline.2ac5c10fac3313af1cddc510b3e250dd.svg",
     "static/media/trigger-outline.svg": "/pages/react-app/static/media/trigger-outline.163ed6eb0bd7f8c205603c7793f837f8.svg",
-    "main.33a4f0d4.css.map": "/pages/react-app/static/css/main.33a4f0d4.css.map",
-    "main.8b13c095.js.map": "/pages/react-app/static/js/main.8b13c095.js.map"
+    "main.445fc12f.css.map": "/pages/react-app/static/css/main.445fc12f.css.map",
+    "main.31c63b85.js.map": "/pages/react-app/static/js/main.31c63b85.js.map"
   },
   "entrypoints": [
-    "static/css/main.33a4f0d4.css",
-    "static/js/main.8b13c095.js"
+    "static/css/main.445fc12f.css",
+    "static/js/main.31c63b85.js"
   ]
 }
