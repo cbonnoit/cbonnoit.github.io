@@ -100,7 +100,7 @@ function addBanner(bannerText, isError) {
 // if you came from the extension widget or upon installing the extension 
 function onSuccessRedirectBasedOfPageWidth() {
   const pageWidth = getWidth()
-  if (pageWidth < 350) { 
+  if (pageWidth < 450) { 
     // leave some margin (we officially set the coaching width to 300 px)
     window.location.href = '/pages/live/index.html'
   } else {
