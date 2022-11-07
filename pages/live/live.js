@@ -1,5 +1,5 @@
 import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE, PROMPT_TYPES } from '../../cfg/coach.js';
-import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT } from "../../cfg/endpoints.js";
+import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, STARRED_LABEL } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
 
@@ -7,7 +7,7 @@ import { logInfo, back } from "../../lib/core.js";
 import { generateColor } from '../../lib/graphics.js'
 import { createNode, deleteAllChildren } from "../../lib/user-agent.js";
 import { durationToString } from "../../lib/time-fns.js"
-import { updateDisplay } from '../../lib/app/services.js';
+import { submitNotes, updateDisplay } from '../../lib/app/services.js';
 
 const _LOG_SCOPE = '[Trellus][External page]'
 
@@ -34,6 +34,8 @@ let _triggerPromptPersistenceDuration = SEC_TO_MS * 10
 let _partyCodeToColor = {}
 let _transcripts = []
 let partyToSummary = new Map()
+
+let _transcript_starred = false 
 
 // run setup
 setup()
@@ -87,6 +89,24 @@ function setup () {
     await navigator.clipboard.writeText(document.querySelector('#copyText').textContent);
     document.querySelector('#shareText').textContent = 'Copied!'
   })
+
+  document.querySelector('#transcript-star').addEventListener("click", handleTranscriptStarred)
+}
+
+function handleTranscriptStarred() {
+  const dispositions = []
+  if (_transcript_starred) {
+    document.querySelector('#transcript-star').innerHTML = "&#9734"
+    document.querySelector('#transcript-star').style.backgroundColor = "lightgrey"
+  } else {
+    dispositions.push({'value': 'starred', 'label': STARRED_LABEL})
+    document.querySelector('#transcript-star').innerHTML = "&#9733"
+    document.querySelector('#transcript-star').style.backgroundColor = "#5DD077"
+  }
+
+  _transcript_starred = !_transcript_starred
+  // update dispositions
+  submitNotes(_apiKey, _session['sessionId'], dispositions)
 }
 
 function receiveMessage (event) {
@@ -276,6 +296,7 @@ function resetTriggerUI() {
 function resetTranscriptAndSummaryUI() {
   _partyCodeToColor = {}
   _transcripts = []
+  _transcript_starred = false 
   partyToSummary = new Map()
   document.querySelector('#transcriptRoot').innerHTML = ''
   document.querySelector('#trellus-summary').innerHTML = ''
