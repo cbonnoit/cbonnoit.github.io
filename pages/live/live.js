@@ -297,6 +297,8 @@ function resetTranscriptAndSummaryUI() {
   _partyCodeToColor = {}
   _transcripts = []
   _transcript_starred = false 
+  document.querySelector('#transcript-star').innerHTML = "&#9734"
+  document.querySelector('#transcript-star').style.backgroundColor = "lightgrey"
   partyToSummary = new Map()
   document.querySelector('#transcriptRoot').innerHTML = ''
   document.querySelector('#trellus-summary').innerHTML = ''
