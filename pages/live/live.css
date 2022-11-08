@@ -649,3 +649,30 @@ border-radius: 50%;
 .header-click-text:hover {
     opacity: 1;
 }
+
+.star-transcript {
+    padding-left: 10px; 
+    padding-right: 10px;
+    z-index: 99999999; 
+    background-color: lightgrey; 
+    border-radius: 15px;  
+    cursor: pointer; 
+    font-size: x-large; 
+}
+
+.new-feature-flag {
+    border-radius: 5px; 
+    font-size: smaller; 
+    background-color: #5DD077;
+    height: fit-content; 
+    padding: 2px; 
+    color: white;
+}
+
+.star-div {
+    opacity: 0.5;
+}
+
+.star-div:hover {
+    opacity: 1;
+}
