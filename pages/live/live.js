@@ -18,6 +18,7 @@ let _forceServicesHostname = null
 
 // keep track of the current live session and related information
 let _session = null
+let _sessionActive = false
 let _socket = null
 let _clientId = null
 let _call_active = false
@@ -106,7 +107,7 @@ function handleTranscriptStarred() {
 
   _transcript_starred = !_transcript_starred
   // update dispositions
-  submitNotes(_apiKey, _session['sessionId'], dispositions)
+  submitNotes(_apiKey, _session['session_id'], dispositions)
 }
 
 function receiveMessage (event) {
@@ -156,6 +157,7 @@ function startSession (session) {
 
   // set session
   _session = session
+  _sessionActive = true
 
   // create websocket
   const queryString = new URLSearchParams({'session_id': session['session_id']}).toString()
@@ -199,14 +201,14 @@ function startSession (session) {
  */
 function endSession (sessionId) {
   // nothing to do if there is no active session
-  if (_session == null) return
+  if (!_sessionActive) return
 
   // if a sessionId is specified and it is inconsistent it is likely stale
   if (sessionId != null && _session['session_id'] !== sessionId) return
 
   // end the current session
   logInfo(`${_LOG_SCOPE} Ending session ${_session['session_id']}`)
-  _session = null
+  _sessionActive = false
   if (_socket != null) {
     _socket.close()
     _socket = null
