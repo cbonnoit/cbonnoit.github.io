@@ -100,7 +100,7 @@ function handleTranscriptStarred() {
     document.querySelector('#transcript-star').innerHTML = "&#9734"
     document.querySelector('#transcript-star').style.backgroundColor = "lightgrey"
   } else {
-    dispositions.push({'value': STARRED_LABEL, 'label': STARRED_DISPOSITION})
+    dispositions.push({'value': STARRED_DISPOSITION, 'label': STARRED_LABEL})
     document.querySelector('#transcript-star').innerHTML = "&#9733"
     document.querySelector('#transcript-star').style.backgroundColor = "#5DD077"
   }
