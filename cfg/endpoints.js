@@ -13,6 +13,7 @@ export const GET_USER_TRIGGERS_ENDPOINT = 'get-user-triggers'
 export const SAVE_USER_TRIGGERS_ENDPOINT = 'save-user-triggers'
 export const LIST_USER_SESSIONS_ENDPOINT = 'list-user-sessions'
 export const GET_SESSION_DATA_ENDPOINT = 'get-session-data'
+export const SUBMIT_TRACKER = 'submit-tracker'
 
 // extension ID
 export const EXTENSION_ID = "enhpjjojmnlnaokmppkkifgaonfojigl"
