@@ -1,5 +1,5 @@
 import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE, PROMPT_TYPES } from '../../cfg/coach.js';
-import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, STARRED_LABEL } from "../../cfg/endpoints.js";
+import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, STARRED_LABEL, STARRED_DISPOSITION } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
 
@@ -100,7 +100,7 @@ function handleTranscriptStarred() {
     document.querySelector('#transcript-star').innerHTML = "&#9734"
     document.querySelector('#transcript-star').style.backgroundColor = "lightgrey"
   } else {
-    dispositions.push({'value': 'starred', 'label': STARRED_LABEL})
+    dispositions.push({'value': STARRED_LABEL, 'label': STARRED_DISPOSITION})
     document.querySelector('#transcript-star').innerHTML = "&#9733"
     document.querySelector('#transcript-star').style.backgroundColor = "#5DD077"
   }

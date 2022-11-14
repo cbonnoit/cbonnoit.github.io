@@ -26,3 +26,4 @@ export const TRELLUS_NOTE_SOURCE = 'TRELLUS'
 
 // note magic types
 export const STARRED_LABEL = '__starred__'
+export const STARRED_DISPOSITION = 'starred'
