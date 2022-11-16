@@ -1,5 +1,6 @@
-import { SERVICE_HOSTNAME, SIGNIN_USER_ENDPOINT, EXTENSION_ID, GOOGLE_LOGIN, PASSWORD_LOGIN, SIGNUP_USER_ENDPOINT } from "../../cfg/endpoints.js";
+import { SERVICE_HOSTNAME, SIGNIN_USER_ENDPOINT, EXTENSION_ID, GOOGLE_LOGIN, PASSWORD_LOGIN, SIGNUP_USER_ENDPOINT, SUBMIT_TRACKER } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
+import { REFERRER_STORAGE_KEY, ATTRIBUTION_CHANNEL_STORAGE_KEY, TRACKER_TYPE  } from "../../cfg/sources.js"
 import { createNode, getWidth } from "../../lib/user-agent.js";
 import { logInfo } from "../../lib/core.js";
 import { simpleFetchAndCheck } from "../../lib/network.js";
@@ -94,11 +95,35 @@ function addBanner(bannerText, isError) {
   setTimeout(() => bannerBox.style.display = 'none', 2000)
 }
 
+async function submitTrackerInformationAndRedirect(apiKey) {
+  // make the request
+  logInfo(`${_LOG_SCOPE} Submitting tracking information`)
+  let tracker_payloads = []
+  const referrer = window.localStorage.getItem(REFERRER_STORAGE_KEY)
+  const attributionChannel = window.localStorage.getItem(ATTRIBUTION_CHANNEL_STORAGE_KEY)
+  if (referrer !== null) tracker_payloads.push({'payload_key': REFERRER_STORAGE_KEY, 'payload_value': referrer})
+  if (attributionChannel !== null) tracker_payloads.push({'payload_key': ATTRIBUTION_CHANNEL_STORAGE_KEY, 'payload_value': attributionChannel})
+  
+  const hostname = _forceServicesHostname ?? SERVICE_HOSTNAME
+  const url = `https://${hostname}/${SUBMIT_TRACKER}`
+  const parameters = {'api_key': apiKey, 'tracker_type': TRACKER_TYPE.INSTALL, base_url: window.location.hostname, tracker_payloads: tracker_payloads}
+  let result
+  try {
+    result = await simpleFetchAndCheck(url, parameters, true)
+  } catch {
+    logInfo(`${_LOG_SCOPE} Tracking information not properly submitted`)
+  }
+
+  //clear up parameters
+  window.localStorage.removeItem(REFERRER_STORAGE_KEY)
+  window.localStorage.removeItem(ATTRIBUTION_CHANNEL_STORAGE_KEY)
+}
+
 
 // TODO - this is a hacky fix so we don't have to update the extension 
 // we should be passing a url in the parameters upon redirect to the login page so we know
 // if you came from the extension widget or upon installing the extension 
-function onSuccessRedirectBasedOfPageWidth() {
+function redirectBasedOfPageWidth() {
   const pageWidth = getWidth()
   if (pageWidth < 450) { 
     // leave some margin (we officially set the coaching width to 300 px)
@@ -109,7 +134,6 @@ function onSuccessRedirectBasedOfPageWidth() {
 }
 
 function setApiKey(apiKey) {
-  console.log(chrome)
   chrome.runtime.sendMessage(_extensionId, {
     'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_SET_API_KEY, 
     'apiKey': apiKey, 
@@ -120,7 +144,7 @@ function setApiKey(apiKey) {
   if (result == null)
     addBanner('Service worker did not acknowledge', true)
   else if (result === true || result['success'] === true)
-    onSuccessRedirectBasedOfPageWidth()
+    submitTrackerInformationAndRedirect(apiKey).then(() => redirectBasedOfPageWidth())
   else if (result['error'] != null)
     addBanner(`Error: ${result['error']}`)
   else if (result['success'] === false)
