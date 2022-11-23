@@ -8,7 +8,8 @@ export const ATTRIBUTION_CHANNEL = Object.freeze({
 
 export const TRACKER_TYPE = Object.freeze({
     INSTALL: 'INSTALL',
-    CLICK: 'CLICK'
+    CLICK: 'CLICK',
+    UNINSTALL: 'UNINSTALL'
 });
 
 export const ATTRIBUTION_CHANNEL_TO_LEARN_LINK_REGEX = Object.freeze({
@@ -31,4 +32,4 @@ export const REFERRER_STORAGE_KEY = 'referrer' // used in local storage as well 
 export const REFERRER_URL_KEY = 'ref' // used in the url header to store the referral e.g., ?ref='<X>'. 
 export const LEARN_LINK = 'https://app.trellus.ai/learn'
 export const INSTALL_LINK = 'https://app.trellus.ai/install'
-
+export const UNINSTALL_FORM = 'https://6d142b93t9r.typeform.com/to/fCoRsTkq'
