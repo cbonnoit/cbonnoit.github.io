@@ -3,7 +3,8 @@ export const ATTRIBUTION_CHANNEL = Object.freeze({
     LINKEDIN_DM: 'LINKEDIN_DM', 
     LINKEDIN_POST: 'LINKEDIN_POST', 
     TRELLUS_WEBSITE: 'TRELLUS_WEBSITE',
-    MANUAL: 'MANUAL'
+    MANUAL: 'MANUAL',
+    CALLBLITZ: 'CALLBLITZ',
   });
 
 export const TRACKER_TYPE = Object.freeze({
