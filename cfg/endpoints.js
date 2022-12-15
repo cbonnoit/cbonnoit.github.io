@@ -3,6 +3,7 @@ export const SERVICE_HOSTNAME = 'api.trellus.ai'
 
 // realtime endpoints
 export const SUBSCRIBE_CLIENT_ENDPOINT = 'subscribe-client';
+export const FINISH_CONVERSATION_ENDPOINT = 'finish-conversation';
 
 // services endpoints
 export const SIGNUP_USER_ENDPOINT = 'signup-user'
