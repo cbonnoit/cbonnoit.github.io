@@ -1,5 +1,5 @@
 import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE, PROMPT_TYPES } from '../../cfg/coach.js';
-import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, STARRED_LABEL, STARRED_DISPOSITION } from "../../cfg/endpoints.js";
+import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, FINISH_CONVERSATION_ENDPOINT, STARRED_LABEL, STARRED_DISPOSITION } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
 
@@ -8,6 +8,7 @@ import { generateColor } from '../../lib/graphics.js'
 import { createNode, deleteAllChildren } from "../../lib/user-agent.js";
 import { durationToString } from "../../lib/time-fns.js"
 import { submitNotes, updateDisplay } from '../../lib/app/services.js';
+import { simpleFetchAndCheck } from '../../lib/network.js'
 
 const _LOG_SCOPE = '[Trellus][External page]'
 
@@ -23,6 +24,8 @@ let _sessionActive = false
 let _socket = null
 let _clientId = null
 let _call_active = false
+// track sessions that have been ended
+let _sessionIdsEnded = new Set()
 
 // keep track of the current shown prompts
 let _activeBehavioralPrompt = null
@@ -156,15 +159,44 @@ function receiveMessage (event) {
         document.querySelector('#realtimeEnabledText').textContent =  'Current Call Disabled'
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_END_CALL:
+      if (message['sessionId'] != null) {
+        // If we have explicit session ids and they don't match, don't stop anything yet.
+        // This keeps us online if an old call's end comes after a new call starts.
+        //
+        // Since we don't have a session id at the time of START_CALL,
+        // this could get us stuck (until the next call begins and ends) with
+        // _call_active = true and the coaching toggle disabled if we get
+        // the END_CALL before the START_COACHING (startSession).
+        // But at least we guarantee that no session remains stuck open
+        // as long as we ever receive its END_CALL:
+        // 1. If END_CALL is received for a past session, it will already have
+        //    been ended by startSession calling endSession;
+        // 2. If END_CALL is received for a current session, call endSession
+        //    when COACHING_END comes down the coaching websocket,
+        //    and set a timeout in endCurrentConversation() as a backup.
+        // 3. If END_CALL is received for a future session, record it in
+        //    _sessionIdsEnded so we can reject its start when that comes.
+        //
+        // If there is no session id (old extension or coaching not enabled)
+        // then we blindly assume messages arrive in order.
+        _sessionIdsEnded.add(message['sessionId'])
+        if (_session !== null && message['sessionId'] != _session['session_id']) break
+      }
+      // set call state
       _call_active = false
+      // reset toggle
       document.querySelector('#realtimeEnabled').checked = true
       document.querySelector('#realtimeEnabledText').textContent =  'Coaching Enabled'
+      // kick off cleanup
+      endCurrentConversation()
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_START_COACHING:
-      startSession(message['session'])
-      break
-    case MESSAGE_TYPES.APP_TO_EXTERNAL_END_COACHING: // TODO: backwards compatibility, remove at some point
-      endSession(message['sessionId'])
+      // If END_CALL for the messaged session already came, don't start it.
+      if (_sessionIdsEnded.has(message['session']['session_id'])) {
+        logInfo(`${_LOG_SCOPE} Ignoring START_COACHING for already-ended session ${message['session']['session_id']}`)
+      } else {
+        startSession(message['session'])
+      }
       break
     case MESSAGE_TYPES.APP_TO_EXTERNAL_SET_EXTENSION_INFO:
       _extensionId = message['extensionId']
@@ -187,7 +219,9 @@ function receiveMessage (event) {
  */
 function startSession (session) {
   logInfo(`${_LOG_SCOPE} Starting session ${session['session_id']}`)
-  endSession()
+  // Ensure cleanup gets triggered even if the END_CALL message got dropped.
+  endCurrentConversation()  // do first because it needs _session
+  endSession()  // end prev session immediately; don't wait for finalization
   resetUI()
 
   // set session
@@ -253,6 +287,21 @@ function endSession (sessionId) {
   resetBehavioralUI()
   resetTriggerUI()
   _clientId = null
+}
+
+/**
+ * End the conversation of the current session
+ */
+function endCurrentConversation() {
+  if (!_sessionActive) return
+
+  // notify the realtime server
+  const finish_endpoint = `https://${_session['realtime_hostname']}/${FINISH_CONVERSATION_ENDPOINT}`
+  simpleFetchAndCheck(finish_endpoint, {conversation_id: _session['conversation_id']}, true)
+
+  // in case the shutdown handshake broke, set a timeout to end the session
+  const closing_session_id = _session['session_id']
+  window.setTimeout(() => endSession(closing_session_id), 60000)
 }
 
 /**
@@ -457,6 +506,10 @@ function updateCoachingData (prompt) {
     }
   } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY) {
     updateTextSummaryUI(prompt)
+  } else if (promptType === PROMPT_TYPES.COACHING_END) {
+    // caller (socket.onmessage) has already checked that _session['sessionId']
+    // matches the sessionId that the socket was opened with.
+    endSession(_session['sessionId'])
   } else {
     logInfo(`Unknown prompt ${promptType}`)
   }
