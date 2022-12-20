@@ -3,7 +3,7 @@ import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, STARRED_LABEL, STARRED_DISPOSI
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
 import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
 
-import { logInfo, back } from "../../lib/core.js";
+import { logInfo, back, arrayCompareFunc } from "../../lib/core.js";
 import { generateColor } from '../../lib/graphics.js'
 import { createNode, deleteAllChildren } from "../../lib/user-agent.js";
 import { durationToString } from "../../lib/time-fns.js"
@@ -13,6 +13,7 @@ const _LOG_SCOPE = '[Trellus][External page]'
 
 // extension information
 let _extensionId = EXTENSION_ID
+let _extensionVersion = "1.0.6.3".split().map(x => parseInt(x))
 let _apiKey = null
 let _forceServicesHostname = null
 
@@ -92,6 +93,38 @@ function setup () {
   })
 
   document.querySelector('#transcript-star').addEventListener("click", handleTranscriptStarred)
+
+  // user actions on auto-summary
+  document.querySelector('#auto-summary-copy-button').addEventListener("click", () => {
+    const summary_text = document.querySelector('#auto-summary-container').textContent.trim()
+    if (summary_text.length) {
+      window.navigator.clipboard.writeText(summary_text)
+        .then(() => toast('copied!', 2000, '#3a5', '#fff'))
+        .catch(() => toast('could not copy summary to clipboard', 3000, '#c00', '#fff'))
+    }
+  })
+  document.querySelector('#auto-summary-inject-button').addEventListener("click", () => {
+    const summary_text = document.querySelector('#auto-summary-container').textContent.trim()
+    if (summary_text.length) {
+      chrome.runtime.sendMessage(_extensionId, {
+        'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_TEXT_SUMMARY,
+        'summary': summary_text,
+      }, (success) => {
+        if (success) {
+          toast('copied!', 2000, '#3a5', '#fff')
+        } else {
+          toast('could not copy summary to dialer', 3000, '#c00', '#fff')
+        }
+      })
+    }
+  })
+  document.querySelector('#auto-summary-reject-button').addEventListener("click", () => {
+    toast('thanks!', 2000)
+    resetUIVisibility()
+  })
+
+  // click to hide toast popup
+  document.querySelector('#toast').addEventListener("click", hideToast)
 }
 
 function handleTranscriptStarred() {
@@ -137,6 +170,8 @@ function receiveMessage (event) {
       _extensionId = message['extensionId']
       _apiKey = message['apiKey']
       _forceServicesHostname = message['forceServicesHostname']
+      if (message['extensionVersion']) _extensionVersion = message['extensionVersion'].split('.').map(x => parseInt(x))
+      logInfo(`${_LOG_SCOPE} Extension version is ${_extensionVersion}`)
       document.querySelector('#realtimeEnabled').checked = message['realtimeEnabled']
       break
     case MESSAGE_TYPES.EXTERNAL_TO_APP_IS_LOADED:
@@ -224,11 +259,27 @@ function endSession (sessionId) {
  * Reset all display elements on the UI
  */
 function resetUI () {
+  resetUIVisibility()
   resetWeatherUI()
   updateBuyingIntentUI(0)
   resetBehavioralUI()
   resetTriggerUI()
   resetTranscriptAndSummaryUI()
+}
+
+/**
+ * Reset which boxes are shown and which are hidden
+ */
+function resetUIVisibility () {
+  const realtimePanels = [
+    document.querySelector('#local-main'),
+    document.querySelector('#behavioral-main'),
+    document.querySelector('#objection-main'),
+  ]
+  for (const c of realtimePanels) {
+    c.style.display = ''
+  }
+  document.querySelector('#auto-summary-main').style.display = 'none'
 }
 
 /**
@@ -400,6 +451,12 @@ function updateCoachingData (prompt) {
     updateBehavioralSuggestionUI(prompt)
   } else if (promptType === PROMPT_TYPES.BUYING_INTENT) {
     updateBuyingIntentUI(prompt['value'])
+  } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY_PENDING) {
+    if (prompt['value']) {
+      showLoadingTextSummaryUI()
+    }
+  } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY) {
+    updateTextSummaryUI(prompt)
   } else {
     logInfo(`Unknown prompt ${promptType}`)
   }
@@ -632,4 +689,64 @@ function updateBuyingIntentUI(data) {
 
   weatherElement.innerHTML = '';
   weatherElement.appendChild(parentDiv)
+}
+
+function showLoadingTextSummaryUI() {
+  const realtimePanels = [
+    document.querySelector('#local-main'),
+    document.querySelector('#behavioral-main'),
+    document.querySelector('#objection-main'),
+  ]
+  for (const c of realtimePanels) {
+    c.style.display = 'none'
+  }
+  document.querySelector('#auto-summary-placeholder-text').style.display = ''
+  document.querySelector('#auto-summary-container').style.display = 'none'
+  document.querySelector('#auto-summary-main').style.display = ''
+  document.querySelector('#auto-summary-buttons').style.display = 'none'
+  // display inject button iff we have an integration for it
+  if (
+    _session != null
+    && _session['platform'] == 'SALESLOFT'
+    && arrayCompareFunc(_extensionVersion, [1, 0, 6, 5]) >= 0
+  ) {
+    document.querySelector('#auto-summary-copy-button').style.display = 'none'
+    document.querySelector('#auto-summary-inject-button').style.display = ''
+  } else {
+    document.querySelector('#auto-summary-copy-button').style.display = ''
+    document.querySelector('#auto-summary-inject-button').style.display = 'none'
+  }
+}
+
+function updateTextSummaryUI(prompt) {
+  const textContainer = document.querySelector('#auto-summary-container')
+  textContainer.textContent = prompt['value']
+  // make sure we're visible
+  showLoadingTextSummaryUI()
+  document.querySelector('#auto-summary-placeholder-text').style.display = 'none'
+  textContainer.style.display = ''
+  document.querySelector('#auto-summary-buttons').style.display = ''
+  // post to the update-display endpoint
+  updateDisplay(_apiKey, _clientId, prompt['prompt_id'], prompt['prompt_type'],
+    prompt['value'], new Date(), null)
+}
+
+// Display pop-up messages at the top of the window
+let _toastHideTimer = null
+
+function toast(message, timeout=5000, bg='lightgrey', fg='#000') {
+  const toastContainer = document.querySelector('#toast-container')
+  const toast = document.querySelector('#toast')
+  toast.textContent = message
+  toast.style.backgroundColor = bg
+  toast.style.color = fg
+  toastContainer.style.top = '25px'
+  if (_toastHideTimer !== null) window.clearTimeout(_toastHideTimer)
+  _toastHideTimer = window.setTimeout(hideToast, timeout)
+}
+
+function hideToast() {
+  const toastContainer = document.querySelector('#toast-container')
+  const toast = document.querySelector('#toast')
+  toastContainer.style.top = `-${toast.offsetHeight + 30}px`
 }

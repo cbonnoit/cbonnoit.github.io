@@ -41,7 +41,7 @@
 
                 <div class="panel-body">
                     <div class='trellus-guidance'>
-                        <div class='trellus-guidance-behavioral''>
+                        <div class='trellus-guidance-behavioral'>
                             <div id="buyingSignal" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--value: 0"></div>
                             Meeting signal
                         </div>
@@ -62,6 +62,32 @@
                     <div id='objection' class='flexColumn'>
                         <div class="placeholder-text" id="objection-placeholder-text" >Listening for objections...</div>
                         <div id='objection-container' class='flexColumn'></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main add-margin" id="auto-summary-main" style="display: none;">
+                <div class="trellus-recording-header">
+                    <div style="margin-left: 5px; margin-right: 5px;" id="auto-summary-header">Auto Summary</div>
+                </div>
+                <div class="panel-body">
+                    <div id="auto-summary" class="flexColumn">
+                        <div class="placeholder-text" id="auto-summary-placeholder-text" style="text-align: center;">Generating summary...<br/><img alt="loading dots" src="/images/loading.gif" /></div>
+                        <div id="auto-summary-container" style="text-align: left;"></div>
+                    </div>
+                    <div id="auto-summary-buttons" style="text-align: right;">
+                        <div id="auto-summary-copy-button" title="Copy to clipboard">
+                            Copy to clipboard
+                            <span class="button-icon">&#x1f4cb;</span>
+                        </div>
+                        <div id="auto-summary-inject-button" title="Copy to dialer notes">
+                            Copy to dialer notes
+                            <span class="button-icon">&#x1f4dd;</span>
+                        </div>
+                        <div id="auto-summary-reject-button" title="Not helpful">
+                            Not helpful
+                            <span class="button-icon">&#x1f44e;</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,5 +150,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="toast-container">
+        <div id="toast"></div>
     </div>
 </body>
