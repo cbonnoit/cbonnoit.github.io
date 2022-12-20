@@ -676,3 +676,42 @@ border-radius: 50%;
 .star-div:hover {
     opacity: 1;
 }
+
+#auto-summary-buttons > div {
+	display: inline-block;
+	vertical-align: middle;
+	border-radius: 15px;
+	padding: 2px 10px;
+	cursor: pointer;
+	color: #000;
+	background: lightgrey;
+	margin-top: 5px;
+}
+#auto-summary-buttons .button-icon {
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 150%;
+}
+#auto-summary-copy-button:hover { color: #fff; background: #3a5; }
+#auto-summary-inject-button:hover { color: #fff; background: #3a5; }
+#auto-summary-reject-button:hover { color: #fff; background: #c00; }
+
+#toast-container {
+    position: fixed;
+    width: 100%;
+    height: 1px;
+    left: 0px;
+    top: -30px;
+    text-align: center;
+    transition: top 0.25s cubic-bezier(0.6, 2.0, 0.8, 0.9);
+}
+#toast {
+    display: inline-block;
+    vertical-align: top;
+    min-width: 5em;
+    max-width: 80%;
+    background: lightgrey;
+    padding: 2px 10px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px -2px #000;
+}
