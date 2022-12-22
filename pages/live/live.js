@@ -113,11 +113,20 @@ function setup () {
         'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_TEXT_SUMMARY,
         'summary': summary_text,
       }, (success) => {
-        if (success) {
-          toast('copied!', 2000, '#3a5', '#fff')
-        } else {
-          toast('could not copy summary to dialer', 3000, '#c00', '#fff')
-        }
+        window.navigator.clipboard.writeText(summary_text)
+          .then(() => {
+            if (success) {
+              toast('copied to dialer and clipboard', 2000, '#3a5', '#fff')
+            } else {
+              toast('could not copy summary to dialer', 3000, '#fc0', '#000')
+            }
+          }).catch(() => {
+            if (success) {
+              toast('could not copy summary to clipboard', 3000, '#fc0', '#000')
+            } else {
+              toast('could not copy summary', 3000, '#c00', '#fff')
+            }
+          })
       })
     }
   })
