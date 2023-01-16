@@ -1,7 +1,7 @@
 import { BEHAVIORAL_PROMPTS, BEHAVIORAL_PROMPTS_TO_IMAGE, PROMPT_TYPES } from '../../cfg/coach.js';
 import { EXTENSION_ID, SUBSCRIBE_CLIENT_ENDPOINT, FINISH_CONVERSATION_ENDPOINT, STARRED_LABEL, STARRED_DISPOSITION } from "../../cfg/endpoints.js";
 import { MESSAGE_TYPES } from "../../cfg/messages.js";
-import { MIN_TO_SEC, SEC_TO_MS } from "../../cfg/const.js"
+import { MIN_TO_SEC, SEC_TO_MS, MICRO_TO_MS } from "../../cfg/const.js"
 
 import { logInfo, back, arrayCompareFunc } from "../../lib/core.js";
 import { generateColor } from '../../lib/graphics.js'
@@ -258,6 +258,8 @@ function startSession (session) {
       updateCoachingData(data['coaching_data']['coaching'])
     else if (data['weather_data'] != null)
       updateWeather(data['weather_data']['weather']) // todo: weather by party...
+    else if (data['previous_prospect_calls_data'] != null)
+      updatePreviousProspectCallData(data['previous_prospect_calls_data'])
   }
   socket.onclose = () => {
     logInfo(`${_LOG_SCOPE} Closed client socket for ${session['session_id']}`)
@@ -311,6 +313,7 @@ function endCurrentConversation() {
 function resetUI () {
   resetUIVisibility()
   resetWeatherUI()
+  resetRecallUI()
   updateBuyingIntentUI(0)
   resetBehavioralUI()
   resetTriggerUI()
@@ -322,6 +325,7 @@ function resetUI () {
  */
 function resetUIVisibility () {
   const realtimePanels = [
+    document.querySelector('#recall-main'),
     document.querySelector('#local-main'),
     document.querySelector('#behavioral-main'),
     document.querySelector('#objection-main'),
@@ -343,6 +347,12 @@ function resetWeatherUI() {
   const weatherElement = document.querySelector('#weather-main')
   weatherElement.innerHTML = ''
   weatherElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'weather-placeholder-text'}, 'Gathering weather data...'))
+}
+
+function resetRecallUI() {
+  const recallElement = document.querySelector('#recall-info-main')
+  recallElement.innerHTML = ''
+  recallElement.appendChild(createNode('div', {'class': 'placeholder-text', 'id': 'recall-placeholder-text'}, 'Gathering recall data...'))
 }
 
 /**
@@ -708,6 +718,133 @@ function updateBuyingIntentUI(data) {
   const offsetFromHere = offsetSeconds + now.getTimezoneOffset() * 60
   const offsetTime = new Date(now.getTime() + offsetFromHere * 1000)
   return offsetTime.toLocaleTimeString([], {timeStyle: "short"})
+}
+
+function timeSince(date) {
+  console.log(date)
+
+  var seconds = Math.floor((new Date() - date) / 1000);
+
+  var interval = seconds / 31536000;
+
+  if (interval > 1) {
+    return Math.floor(interval) + " years ago";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months ago";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days ago";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours ago";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes ago";
+  }
+  return Math.floor(seconds) + " seconds ago";
+}
+
+/**
+ * Update previous prospect call data based on input
+ * @param {object} data
+ */
+function updatePreviousProspectCallData (data) { 
+  const previousCalls = data['session_count']
+  const notes = data['notes']
+  const dispositions = data['dispositions']
+  const displays = data['displays']
+
+  const recallElement = document.querySelector('#recall-info-main')
+  const parentDiv = createNode('div', {'style': 'flex-direction: column; display: flex; width: 100%'})
+  recallElement.innerHTML = '';
+  recallElement.appendChild(parentDiv)
+
+  
+  const prevCountParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex'})
+  const prevCountTextDiv = createNode('div', {'style': 'min-width: 30%; max-width: 30%; width: 30%; margin-right: 5px; color: grey'})
+  const prevCountValueDiv = createNode('div')
+  prevCountTextDiv.innerText = "Dials (#):"; // super easy place to show how many prospect/gatkeeper/voicemails you hit
+  prevCountValueDiv.innerText = previousCalls
+
+  prevCountParentDiv.appendChild(prevCountTextDiv)
+  prevCountParentDiv.appendChild(prevCountValueDiv)
+  parentDiv.appendChild(prevCountParentDiv)
+
+  if (previousCalls === 0) return
+
+
+  const lineParentDiv = createNode('div', {'style': 'width: 100%; text-align: center; border-bottom: 1px solid grey; line-height: 0.1em; margin: 10px 0 20px;'})
+  const spanTextDiv = createNode('span', {'style': 'background: #EEEEF0; padding: 0 10px; color: grey'})
+  spanTextDiv.innerText = 'Last Dial'
+  lineParentDiv.appendChild(spanTextDiv)
+
+  parentDiv.appendChild(lineParentDiv)
+
+  const lastCallTimeParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex'})
+  const lastCallTextDiv = createNode('div', {'style': 'min-width: 25%; max-width: 25%; width: 25%; margin-right: 5px; color: grey'})
+  const lastCallValueDiv = createNode('div')
+  lastCallTextDiv.innerText = "Last Call: "; 
+  lastCallValueDiv.innerText = timeSince(new Date(data['last_call_time'] * MICRO_TO_MS))
+
+  lastCallTimeParentDiv.append(lastCallTextDiv)
+  lastCallTimeParentDiv.append(lastCallValueDiv)
+  parentDiv.appendChild(lastCallTimeParentDiv)
+
+
+  const audioDurationParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex'})
+  const audioDurationTextDiv = createNode('div', {'style': 'min-width: 25%; max-width: 25%; width: 25%; margin-right: 5px; color: grey'})
+  const audioDurationValueDiv = createNode('div')
+  audioDurationTextDiv.innerText = "Time: "; 
+  audioDurationValueDiv.innerText = new Date(data['audio_duration'] * 1000).toISOString().substring(14, 19)
+
+  audioDurationParentDiv.append(audioDurationTextDiv)
+  audioDurationParentDiv.append(audioDurationValueDiv)
+  parentDiv.appendChild(audioDurationParentDiv)
+
+  if (dispositions.length !== 0) {
+    const dispositionParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex'})
+    const prevDispositionTextDiv = createNode('div', {'style': 'min-width: 25%; max-width: 25%; width: 25%; margin-right: 5px; color: grey'})
+    const prevDispositionValueDiv = createNode('div')
+    prevDispositionTextDiv.innerText = "Dispo:"; 
+
+    const dispositionTextValues = dispositions.map(disposition => disposition['disposition'])
+    prevDispositionValueDiv.innerText = dispositionTextValues.join(', ')
+  
+    dispositionParentDiv.append(prevDispositionTextDiv)
+    dispositionParentDiv.append(prevDispositionValueDiv)
+  
+    parentDiv.appendChild(dispositionParentDiv)
+  }
+
+  const filteredDisplays = displays.filter(display => display['prompt_type'] == 'TEXT_SUMMARY')
+  if (notes.length == 0 && filteredDisplays.length == 0) return
+
+  const noteParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex; cursor: pointer;'})
+  const prevNoteTextSpan = createNode('span', {'style': 'margin-right: 35px; color: grey'})
+  const prevNoteValueDiv = createNode('div', {'class': 'text-truncate'})
+  prevNoteTextSpan.innerText = "Note:"; 
+  noteParentDiv.onclick = function () {
+    prevNoteValueDiv.classList.toggle('text-truncate')
+  }
+  prevNoteValueDiv.appendChild(prevNoteTextSpan)
+
+  let noteText
+  if (notes.length !== 0) {
+    const noteTextValues = notes.map(note => note['note'])
+    noteText = noteTextValues.join(' | ')
+  } else { 
+    const noteTextValues = filteredDisplays.map(display => display['prompt_text'])
+    noteText = noteTextValues.join(' | ')
+  }
+
+  prevNoteValueDiv.appendChild(document.createTextNode(noteText))
+  noteParentDiv.append(prevNoteValueDiv)
+  parentDiv.appendChild(noteParentDiv)
 }
 
 

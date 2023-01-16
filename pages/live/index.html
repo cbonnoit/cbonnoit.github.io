@@ -7,7 +7,7 @@
     <!-- get fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
 
 
 
@@ -23,8 +23,21 @@
 <body class="dark-mode">
     <div class="main-body">
         <div class="coaching-main">
-            <div class="main" id="local-main">
-                <div class="trellus-recording-header">    
+
+            <div class="main" id="recall-main">
+                <div class="trellus-recording-header">
+                    <div style="margin-left: 5px; margin-right: 5px;">Instant Recall</div>
+                    <a href="https://app.trellus.ai/pages/react-app/#/analytics" target="_blank" style="text-decoration:none;"><div class="header-click-text">Click for past analytics</div></a>
+                </div>
+                <div class="panel-body">
+                    <div class="weather" id="recall-info-main">
+                        <div class="placeholder-text" id="recall-placeholder-text" >Checking for recall data...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main add-margin" id="local-main">
+                <div class="trellus-recording-header">
                     <div style="margin-left: 5px; margin-right: auto;">Weather & News</div>
                 </div>
                 <div class="panel-body">
@@ -106,7 +119,7 @@
                       <div id="transcript-box-wrapper-inner">
                         <div class="trellus-transcript-box" id="transcriptRoot">
                         </div>
-                        <div class="star-div" style="display:flex; left: 10%; bottom: 110px; position: absolute;">
+                        <div class="star-div" style="bottom: 35px; position: relative;">
                             <span id="transcript-star" class="star-transcript">
                                 &#9734;
                             </span>    
@@ -115,6 +128,9 @@
                 </div>
                 </div>
             </div>
+
+
+
             </div>
         </div>
 
