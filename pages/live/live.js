@@ -287,6 +287,9 @@ function endSession (sessionId) {
   }
 
   // reset dynamic prompts
+  if (isTextSummaryPending()) {
+    updateTextSummaryUIMessageOnly("Sorry, server didn't respond 🥺")
+  }
   resetBehavioralUI()
   resetTriggerUI()
   _clientId = null
@@ -517,6 +520,8 @@ function updateCoachingData (prompt) {
     }
   } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY) {
     updateTextSummaryUI(prompt)
+  } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY_ERROR) {
+    updateTextSummaryUIMessageOnly("Sorry, " + prompt["value"])
   } else if (promptType === PROMPT_TYPES.COACHING_END) {
     // caller (socket.onmessage) has already checked that _session['sessionId']
     // matches the sessionId that the socket was opened with.
@@ -909,13 +914,26 @@ function showLoadingTextSummaryUI() {
   }
 }
 
-function updateTextSummaryUI(prompt) {
+function isTextSummaryPending() {
+  return (
+    document.querySelector('#auto-summary-placeholder-text').style.display == ''
+    && document.querySelector('#auto-summary-container').style.display == 'none'
+    && document.querySelector('#auto-summary-main').style.display == ''
+  )
+}
+
+function updateTextSummaryUIMessageOnly(message) {
   const textContainer = document.querySelector('#auto-summary-container')
-  textContainer.textContent = prompt['value']
+  textContainer.textContent = message
   // make sure we're visible
   showLoadingTextSummaryUI()
   document.querySelector('#auto-summary-placeholder-text').style.display = 'none'
   textContainer.style.display = ''
+}
+
+function updateTextSummaryUI(prompt) {
+  updateTextSummaryUIMessageOnly(prompt['value'])
+  // show action buttons
   document.querySelector('#auto-summary-buttons').style.display = ''
   // post to the update-display endpoint
   updateDisplay(_apiKey, _clientId, prompt['prompt_id'], prompt['prompt_type'],
