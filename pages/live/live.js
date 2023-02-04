@@ -754,12 +754,24 @@ function timeSince(date) {
   return Math.floor(seconds) + " seconds ago";
 }
 
+function formatPhoneNumber(phoneNumberString) {
+  var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+  var match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    var intlCode = (match[1] ? '+1' : '');
+    return [intlCode, '(', match[2], ')', match[3], '-', match[4]].join('');
+  }
+  return null;
+}
+
 /**
  * Update previous prospect call data based on input
  * @param {object} data
  */
 function updatePreviousProspectCallData (data) { 
   const previousCalls = data['session_count']
+  const dailyCount = data['daily_count']
+  const prospectPhone = data['prospect_phone']
   const notes = data['notes']
   const dispositions = data['dispositions']
   const displays = data['displays']
@@ -769,11 +781,22 @@ function updatePreviousProspectCallData (data) {
   recallElement.innerHTML = '';
   recallElement.appendChild(parentDiv)
 
+  const dailyCountParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex'})
+  const dailyCountTextDiv = createNode('div', {'style': 'min-width: 80%; max-width: 80%; width: 80%; margin-right: 5px; color: grey'})
+  const dailyCountValueDiv = createNode('div')
+  dailyCountTextDiv.innerText = "Dials today :"
+  dailyCountValueDiv.innerText = dailyCount
   
+  dailyCountParentDiv.appendChild(dailyCountTextDiv)
+  dailyCountParentDiv.appendChild(dailyCountValueDiv)
+  parentDiv.appendChild(dailyCountParentDiv)
+
+  if (prospectPhone == null) return // possible on some platforms where we can't effectively get the phone number
+
   const prevCountParentDiv = createNode('div', {'style': 'flex-direction: row; display: flex'})
-  const prevCountTextDiv = createNode('div', {'style': 'min-width: 30%; max-width: 30%; width: 30%; margin-right: 5px; color: grey'})
+  const prevCountTextDiv = createNode('div', {'style': 'min-width: 80%; max-width: 80%; width: 80%; margin-right: 5px; color: grey'})
   const prevCountValueDiv = createNode('div')
-  prevCountTextDiv.innerText = "Dials (#):"; // super easy place to show how many prospect/gatkeeper/voicemails you hit
+  prevCountTextDiv.innerText = "Dials to " + formatPhoneNumber(prospectPhone) + ':'; // super easy place to show how many prospect/gatkeeper/voicemails you hit
   prevCountValueDiv.innerText = previousCalls
 
   prevCountParentDiv.appendChild(prevCountTextDiv)
@@ -782,10 +805,9 @@ function updatePreviousProspectCallData (data) {
 
   if (previousCalls === 0) return
 
-
   const lineParentDiv = createNode('div', {'style': 'width: 100%; text-align: center; border-bottom: 1px solid grey; line-height: 0.1em; margin: 10px 0 20px;'})
   const spanTextDiv = createNode('span', {'style': 'background: #EEEEF0; padding: 0 10px; color: grey'})
-  spanTextDiv.innerText = 'Last Dial'
+  spanTextDiv.innerText = 'Last Dial to ' + formatPhoneNumber(prospectPhone)
   lineParentDiv.appendChild(spanTextDiv)
 
   parentDiv.appendChild(lineParentDiv)
