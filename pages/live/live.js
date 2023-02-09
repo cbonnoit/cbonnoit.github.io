@@ -7,7 +7,7 @@ import { logInfo, back, arrayCompareFunc } from "../../lib/core.js";
 import { generateColor } from '../../lib/graphics.js'
 import { createNode, deleteAllChildren } from "../../lib/user-agent.js";
 import { durationToString } from "../../lib/time-fns.js"
-import { submitNotes, updateDisplay } from '../../lib/app/services.js';
+import { submitNotes, updateDisplay, requestTextSummary } from '../../lib/app/services.js';
 import { simpleFetchAndCheck } from '../../lib/network.js'
 
 const _LOG_SCOPE = '[Trellus][External page]'
@@ -125,6 +125,21 @@ function setup () {
   document.querySelector('#auto-summary-reject-button').addEventListener("click", () => {
     toast('thanks!', 2000)
     resetUIVisibility()
+  })
+  document.querySelector('#auto-summary-request-button').addEventListener("click", async () => {
+    const button = document.querySelector('#auto-summary-request-button')
+    if (!button.dataset.sessionId) {
+      return
+    }
+    button.style.display = 'none';
+    showLoadingTextSummaryUI()
+    const response = await requestTextSummary(_apiKey, button.dataset.sessionId);
+    if (_sessionActive && response['session_id'] !== _session['session_id']) {
+      return
+    }
+    updateTextSummaryUI({'value': response['summary'],
+                         'prompt_id': parseInt(button.dataset.promptId)},
+                        button.dataset.clientId)
   })
 
   // click to hide toast popup
@@ -337,6 +352,7 @@ function resetUIVisibility () {
     c.style.display = ''
   }
   document.querySelector('#auto-summary-main').style.display = 'none'
+  document.querySelector('#auto-summary-request-button').style.display = 'none'
 }
 
 /**
@@ -517,9 +533,11 @@ function updateCoachingData (prompt) {
   } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY_PENDING) {
     if (prompt['value']) {
       showLoadingTextSummaryUI()
+    } else {
+      showTextSummaryRequestButton(_session['session_id'], _clientId, prompt['prompt_id'])
     }
   } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY) {
-    updateTextSummaryUI(prompt)
+    updateTextSummaryUI(prompt, _clientId)
   } else if (promptType === PROMPT_TYPES.TEXT_SUMMARY_ERROR) {
     updateTextSummaryUIMessageOnly("Sorry, " + prompt["value"])
   } else if (promptType === PROMPT_TYPES.COACHING_END) {
@@ -953,13 +971,21 @@ function updateTextSummaryUIMessageOnly(message) {
   textContainer.style.display = ''
 }
 
-function updateTextSummaryUI(prompt) {
+function updateTextSummaryUI(prompt, clientId) {
   updateTextSummaryUIMessageOnly(prompt['value'])
   // show action buttons
   document.querySelector('#auto-summary-buttons').style.display = ''
   // post to the update-display endpoint
-  updateDisplay(_apiKey, _clientId, prompt['prompt_id'], prompt['prompt_type'],
+  updateDisplay(_apiKey, clientId, prompt['prompt_id'], PROMPT_TYPES.TEXT_SUMMARY,
     prompt['value'], new Date(), null)
+}
+
+function showTextSummaryRequestButton(sessionId, clientId, promptId) {
+  const button = document.querySelector('#auto-summary-request-button')
+  button.dataset.sessionId = sessionId
+  button.dataset.clientId = clientId
+  button.dataset.promptId = promptId
+  button.style.display = ''
 }
 
 // Display pop-up messages at the top of the window

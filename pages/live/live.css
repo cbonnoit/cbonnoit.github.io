@@ -593,7 +593,7 @@ border-radius: 50%;
     visibility: visible;
 }
 
-.copy-button:hover {
+button:hover {
     cursor: pointer;
     color: #5DD077;
 }
@@ -656,13 +656,25 @@ border-radius: 50%;
     font-size: x-large; 
 }
 
-.new-feature-flag {
+.new-feature {
+    /*
+    The "New!" will only appear in the right place if `position` is anything
+    other than `static`. So use .new-feature on elements without `position` set,
+    and .new-feature-positioned on an element with `position` set.
+    */
+    position: relative;
+}
+.new-feature:after, .new-feature-positioned:after {
     border-radius: 5px; 
-    font-size: smaller; 
+    font-size: 10px;
     background-color: #5DD077;
     height: fit-content; 
     padding: 2px; 
     color: white;
+    content: "New!";
+    position: absolute;
+    top: -5px;
+    right: -2em;
 }
 
 .star-div {
