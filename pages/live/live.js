@@ -109,9 +109,8 @@ function setup () {
   document.querySelector('#auto-summary-inject-button').addEventListener("click", () => {
     const summary_text = document.querySelector('#auto-summary-container').textContent.trim()
     if (summary_text.length) {
-      const message_type = arrayCompareFunc(_extensionVersion, [1, 0, 6, 7]) >= 0 ? MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_CALL_FINALIZATION : MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_TEXT_SUMMARY
       chrome.runtime.sendMessage(_extensionId, {
-        'type': message_type,
+        'type': MESSAGE_TYPES.EXTERNAL_TO_BACKGROUND_CALL_FINALIZATION,
         'summary': summary_text,
       }, (success) => {
         if (success) {
